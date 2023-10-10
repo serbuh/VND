@@ -43,18 +43,6 @@ function CVAS() {
 	//what to do, when a message from the UDP Port arrives
     server.on('message', (msg, rinfo) => {
 		console.log(`\nNew msg from ${rinfo.address}:${rinfo.port}:\n${msg}`)
-		// status_dict = {"Video FPS"  : (24.3,"Telem",0),
-        //         "Telem FPS" : (22.0,"Telem",1),
-        //         "frame"     : (23832,"Telem",2),
-        //         "Last FPC"  : (13,"Status",1),
-        //         "FOV"       : ((60.5, 55.6), "Status", 1),
-        //         "Sensor"    : ("VIS", "Status", 0),
-        //         "CVS state" : ("Scout", "Status", 1),
-        //         "Counter"   : (-999, "Status", 0),
-        //         "yaw"       : (0.0, "Compass", "#ff0000"),
-        //         "telem_azimuth" : (0.0, "Compass", "#00ff00"),
-        //         "azimuth_out" : (91.0, "Compass", "#0000ff"),}
-		// json: {"Video FPS": [24.3, "Telem", 0], "FOV": [[60.5, 55.6], "Status", 1], "Sensor": ["VIS", "Status", 0]]}
 		
 		// Iterate through fields (key, value) in current dict
 		const json_parsed = JSON.parse(msg);
@@ -67,6 +55,12 @@ function CVAS() {
 			const value = json_parsed[new_line_orig][0];
 			const timestamp = Date.now(); // internal JS timestamp [ms]
 			
+			// Ignore undefined keys
+			if (!(key in this.history)) {
+				console.log("* undefined: " + key);
+				continue;
+			}
+
 			// Log new line
 			console.log(key + " : " + value + " (" + timestamp + ")")
 		
