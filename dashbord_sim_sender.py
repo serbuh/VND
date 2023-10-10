@@ -15,7 +15,7 @@ class Dashboard():
 
 #### test
 status_dict = {"Video FPS"  : (24.3,"Telem",0),
-                # "Telem FPS" : (22.0,"Telem",1),
+                "Telem FPS" : (22.0,"Telem",1),
                 "frame"     : (23832,"Telem",2),
                 # "Last FPC"  : (13,"Status",1),
                 "FOV"       : ((60.5, 55.6), "Status", 1),
