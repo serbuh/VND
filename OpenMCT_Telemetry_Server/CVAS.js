@@ -42,16 +42,17 @@ function CVAS() {
 
 	//what to do, when a message from the UDP Port arrives
     server.on('message', (msg, rinfo) => {
-		console.log(`\nNew msg from ${rinfo.address}:${rinfo.port}:\n${msg}`)
+		//console.log(`\nNew msg from ${rinfo.address}:${rinfo.port}:\n${msg}`)
 		
 		// Iterate through fields (key, value) in current dict
 		const json_parsed = JSON.parse(msg);
 		for (let new_line_orig of Object.keys(json_parsed)) {
 			// Replace spaces with underscores
 			//json_parsed[new_line][1] = json_parsed[new_line][1].replaceAll(" ", "_");
-			new_line = new_line_orig.replaceAll(" ", "_");
+			key_name = new_line_orig.replaceAll(" ", "_");
+			section_name = json_parsed[new_line_orig][1].replaceAll(" ", "_");
 
-			const key = json_parsed[new_line_orig][1] + "." + new_line;
+			const key = section_name + "." + key_name;
 			const value = json_parsed[new_line_orig][0];
 			const timestamp = Date.now(); // internal JS timestamp [ms]
 			
