@@ -9,7 +9,7 @@ function CVAS() {
 	
 	// Initialize working Parameters and Object
 
-	// read the keys from dictionary
+	// read the keys from dictionary (of the compiled openmct)
 	let rawDict = fs.readFileSync('../openmct/dist/ICD/CVAS/CVASdictionary.json')
 	let dict = JSON.parse(rawDict)
 	//console.log(dict.measurements.map(obj => obj.key))
