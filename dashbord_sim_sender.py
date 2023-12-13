@@ -14,17 +14,15 @@ class Dashboard():
 
 
 #### test
-status_dict = {"Video FPS"  : (24.3,"Telem",0),
-                "Telem FPS" : (22.0,"Telem",1),
-                "frame"     : (23832,"Telem",2),
-                # "Last FPC"  : (13,"Status",1),
-                "FOV"       : ((60.5, 55.6), "Status", 1),
-                "Sensor"    : ("VIS", "Status", 0),
-                # "CVS state" : ("Scout", "Status", 1),
-                "Counter"   : (-999, "Status", 0),
-                "yaw"       : (0.0, "Compass", "#ff0000"),
-                "telem_azimuth" : (0.0, "Compass", "#00ff00"),
-                "azimuth_out" : (91.0, "Compass", "#0000ff"),
+status_dict = {"Telem.Video FPS"  : (24.3, 0),
+                "Telem.Telem FPS" : (22.0, 1),
+                "Telem.frame"     : (23832, 2),
+                "Status.FOV"       : ((60.5, 55.6), 1),
+                "Status.Sensor"    : ("VIS", 0),
+                "Status.Counter"   : (-999, 0),
+                "Compass.yaw"       : (0.0, "#ff0000"),
+                "Compass.telem_azimuth" : (0.0, "#00ff00"),
+                "Compass.azimuth_out" : (91.0, "#0000ff"),
                 }
 
 
@@ -35,22 +33,23 @@ counter = 0
 while True:
     counter += 1
     if counter < 150:
-        lst = list(status_dict["Counter"])
+        lst = list(status_dict["Status.Counter"])
         lst[0] = counter
-        lst[2] = 1
-        status_dict["Counter"] = tuple(lst)
+        lst[1] = 1 # Color
+        status_dict["Status.Counter"] = tuple(lst)
     else:
-        lst = list(status_dict["Counter"])
+        lst = list(status_dict["Status.Counter"])
         lst[0] = counter
-        status_dict["Counter"] = tuple(lst)
+        lst[1] = 0 # Color
+        status_dict["Status.Counter"] = tuple(lst)
     
-    lst = list(status_dict["telem_azimuth"])
+    lst = list(status_dict["Compass.telem_azimuth"])
     lst[0] = (0.5 * counter) % 360
-    status_dict["telem_azimuth"] = tuple(lst)
+    status_dict["Compass.telem_azimuth"] = tuple(lst)
 
-    lst = list(status_dict["yaw"])
-    lst[0] = 360 - status_dict["telem_azimuth"][0] + 60
-    status_dict["yaw"] = tuple(lst)
+    lst = list(status_dict["Compass.yaw"])
+    lst[0] = 360 - status_dict["Compass.telem_azimuth"][0] + 60
+    status_dict["Compass.yaw"] = tuple(lst)
 
     # Sending dict
     print("Sending {}".format(status_dict))

@@ -32,6 +32,10 @@ Start OpenMCT
 cd openmct
 npm start
 ```
+Open OpenMCT webpage in a browser
+```
+localhost:8080
+```
 # Telemetry example
 To send some telemetry to VND start:
 ```
