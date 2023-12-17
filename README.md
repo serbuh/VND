@@ -131,3 +131,12 @@ define([
 | Git for Youtube guide | https://gitlab.lrz.de/lls/vis-frame |
 | Nice presentation of the OpenMCT | https://arc.aiaa.org/doi/pdf/10.2514/6.2018-2508 |
 | Some plugins | https://nasa.github.io/openmct/plugins/ |
+
+FAQ / Known Problems
+--------
+[Q] History telemetry fails to load with error: ```Error fetching data TypeError: Object.hasOwn is not a function```   
+[A] Update your browser. Or as written in the issue https://github.com/nasa/openmct/issues/4863 :   
+Change all the lines that look like:   
+```Object.hasOwn(requestProvider, 'request')```   
+to   
+```Object.prototype.hasOwnProperty.call(requestProvider, 'request')```
