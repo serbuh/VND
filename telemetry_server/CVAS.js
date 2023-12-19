@@ -50,12 +50,18 @@ function CVAS() {
 			// Replace spaces with underscores
 			key_name = new_line_orig.replaceAll(" ", "_");
 			
-			// Old format: key: (val, section, color)
-			// section_name = json_parsed[new_line_orig][1].replaceAll(" ", "_");
-			// const key = section_name + "." + key_name;
+			// Parse a key name for OpenMCT
+			var key;
+			if (new_line_orig.includes(".")) {
+				// New format: section.key: (val, color)
+				key = key_name;
+			} else {
+				// Old format: key: (val, section, color)
+				section_name = json_parsed[new_line_orig][1].replaceAll(" ", "_");
+				key = section_name + "." + key_name;
+			}
 			
-			// Parse message
-			const key = key_name
+			// Parse value and give a timestamp
 			const value = json_parsed[new_line_orig][0];
 			const timestamp = Date.now(); // internal JS timestamp [ms]
 			
