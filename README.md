@@ -1,19 +1,22 @@
 # VND - Very Nice Dashboard
 
-Customized implementation of NASA's telemetry visualization tool OpenMCT: https://nasa.github.io/openmct/
+Web based customized implementation of NASA's telemetry visualization tool OpenMCT: https://nasa.github.io/openmct/
 
-NOTE:   
 Don't forget to fetch submodules   
 while cloning:   
 `git clone --recurse-submodules <git url>`   
 or if already in cloned project:   
 `git submodule update --init --recursive`   
+If sumbodule is somehow not accessable due to permissions issues - try downloading it manually.   
 
+# Prerequisites
+* Installed Node.js: https://nodejs.org/en/download   
 Tested with:   
-`node v18.18.0`   
-`npm v10.1.0`   
+`node v18.18.0, v18.18.2, v20.6.1`   
+`npm v9.8.1, v10.1.0`   
+* Updated browser (Sometimes there are issues with the older versions)
+* Install node modules (in case that you are using the dev version of VND and OpenMCT)   
 
-# Install node modules before start
 Telemetry Server
 ```
 cd VND/telemetry_server
