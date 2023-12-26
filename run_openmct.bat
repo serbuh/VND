@@ -1,0 +1,1 @@
+cd openmct && npm start
