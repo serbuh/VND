@@ -1,0 +1,67 @@
+S:State.Scouting_accuracy
+S:State.Mapping_infra_status
+S:State.Aggregate_state
+S:State.Init_state
+S:State.Ready_for_scan
+S:State.Collecting
+S:State.Anchoring
+S:State.Anchored
+S:State.Timestamp
+S:Status.scouting_mode
+S:Status.scouting_accuracy
+S:Status.required_scan_reason
+S:Status.bad_region
+Status.corrected_azimuth
+S:Status.mapping_infra_status
+S:Day Metry.Polarity
+Day Metry.Position_error_vertical
+Day Metry.Position_error_horizontal
+S:Day Metry.Sensor_offset_(position)
+S:Day Metry.Sensor_offset_(angles)
+S:Tracker.Day_DoTrkCycle
+S:Tracker.Day___last_do_cycle
+Day Metry.frameNumber
+S:Day Metry.Telemetry_is_valid
+Day Metry.Lat
+Day Metry.Lon
+Day Metry.Alt
+S:Day Metry.primary_location_valid
+S:Day Metry.Height_Accuracy
+Day Metry.Lat_(Sec)
+Day Metry.Lon_(Sec)
+Day Metry.Alt_(Sec)
+S:Day Metry.Secondary_location_valid
+Day Metry.sensorId
+Day Metry.Azimuth
+Compass.Azimuth_Day
+Day Metry.Pitch
+Day Metry.Roll
+S:Day Metry.FOV
+S:Day Metry.Image_Enhancement
+S:Day Metry.Nav_status
+S:Day Metry.GPS_status
+S:Day Metry.Motion_state
+S:Day Metry.Position_data_quality
+S:Day Metry.Orientation_data_quality
+Blob_solution.Frame_Number
+S:Blob_solution.accuracy
+Blob_solution.lat_raw
+Blob_solution.lon_raw
+Blob_solution.alt_raw
+Blob_solution.azimut_raw
+Blob_solution.pitch_raw
+Blob_solution.roll_raw
+Blob_solution.lat_smooth_nav
+Blob_solution.lon_smooth_nav
+Blob_solution.alt_smooth_nav
+Blob_solution.azimut_smooth_nav
+Blob_solution.pitch_smooth_nav
+Blob_solution.roll_smooth_nav
+Blob_solution.lat_corrected
+Blob_solution.lon_corrected
+Blob_solution.alt_corrected
+Blob_solution.azimuth_corrected
+Blob_solution.pitch_corrected
+Blob_solution.roll_corrected
+S:Blob_solution.FOV_raw
+S:Blob_solution.FOV_corrected

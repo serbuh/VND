@@ -1,0 +1,10 @@
+Telem.Video_FPS
+Telem.frame
+S:Status.FOV
+S:Status.Sensor
+Status.Counter
+Compass.yaw
+Compass.telem_azimuth
+Compass.azimuth_out
+State.Scouting_accuracy
+State.Mapping_infra_status

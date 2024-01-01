@@ -48,3 +48,7 @@ codecov
 
 # :(
 package-lock.json
+
+# Python
+env/
+__pycache__
