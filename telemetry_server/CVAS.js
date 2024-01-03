@@ -11,6 +11,7 @@ function CVAS() {
 
 	// read the keys from dictionary (of the compiled openmct)
 	let rawDict = fs.readFileSync('../openmct/dist/messages_interface/CVASdictionary.json')
+	let input_port = fs.readFileSync('port_config.txt', "utf8");
 	let dict = JSON.parse(rawDict)
 	//console.log(dict.measurements.map(obj => obj.key))
 
@@ -113,7 +114,7 @@ function CVAS() {
 		console.log(`CVAS UDP server error:\n${err.stack}`);
 		try{
 			console.log('Try to reconnect...')
-			server.bind(50020);
+			server.bind(input_port);
 		} catch(e) {
 			console.log('Reconnect Failed...')
 			console.log(e)
@@ -123,7 +124,7 @@ function CVAS() {
 	});
 
 	// port specified in the associated python script
-	server.bind(50020);
+	server.bind(input_port);
 
     console.log("CVAS initialized!");
 };
