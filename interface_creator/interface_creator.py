@@ -3,7 +3,7 @@ import os
 try:
     import PySimpleGUI as sg
 except:
-    print("ERROR: No module PySimpleGUI. Please install:\npython -m venv env\nenv\\Scripts\\activate\npython -m pip install PySimpleGUI\nor\npython -m pip install .\installs\PySimpleGUI-4.60.5-py3-none-any.whl\n\nPress any key to exit")
+    print("ERROR: No module PySimpleGUI. Please install:\npython -m venv env\nenv\\Scripts\\activate\npython -m pip install PySimpleGUI\nor\npython -m pip install .\\installs\\PySimpleGUI-4.60.5-py3-none-any.whl\n\nPress any key to exit")
     input()
     exit()
 
@@ -50,9 +50,16 @@ def main():
     # Menu layout
     menu = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
 
+    # Select port
+    row_port_selection = [
+        [sg.Text('Select a port'),
+            sg.Input('', enable_events=True, key='-PORT_INPUT-', expand_x=True, justification='left'),
+            sg.Button("Update")],
+    ]
+
     # File list column
     col_files_list = [
-        [sg.Text('Select a file')],
+        [sg.Text('Select interface')],
         [sg.Listbox(values=filenames_only, size=(30, 30), key='-LISTBOX-', enable_events=True)],
         [sg.Button('Prev', size=(8, 2)), sg.Button('Next', size=(8, 2)),
             sg.Text('File 1 of {}'.format(len(file_paths)), size=(15, 1), key='-FILENUM-')]
@@ -65,7 +72,7 @@ def main():
         [sg.Button('Generate', size=(8, 2))],
     ]
 
-    layout = [[sg.Menu(menu)], [sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]]
+    layout = [[sg.Menu(menu)], row_port_selection, [sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]]
 
     window = sg.Window('Config Generator', layout, return_keyboard_events=True, use_default_focus=False)
 
