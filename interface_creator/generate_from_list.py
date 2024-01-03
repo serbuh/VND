@@ -51,7 +51,8 @@ f'                    "format": "{type}",\n'
     )
 
 def generate_openmct_json(in_lines:str):
-    
+    in_lines = in_lines.splitlines() # Split the lines with \n
+
     print(f"Writing resuls to json: {out_file}")
     
     with open(out_file, "w") as out_f:
@@ -61,7 +62,7 @@ def generate_openmct_json(in_lines:str):
 
         # Iterate over each field name
         print("Fields list:")
-        for i, field_name in enumerate(in_lines.splitlines()):
+        for i, field_name in enumerate(in_lines):
             # Remove new line symbol
             field_name = field_name.strip("\n")
 
