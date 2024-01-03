@@ -13,10 +13,13 @@ class InterfaceCreatorGUI():
     def __init__(self):
         # Get the interfaces files folder
         self.interfaces_folder = os.path.join(".", "examples")
+        self.port_file = os.path.join("..", "telemetry_server", "port_config.txt")
+        
+        # Check existence of interfaces folder
         if not os.path.exists(self.interfaces_folder):
             sg.popup_cancel(f'Folder does not exist!: {self.interfaces_folder}')
             return
-
+        
         # Get list of interface examples
         self.file_paths, self.filenames_only = self.get_files_from_folder(self.interfaces_folder)
         
@@ -24,13 +27,20 @@ class InterfaceCreatorGUI():
             sg.popup(f'No config files in folder {self.interfaces_folder}')
             return
 
+        # Check existence of port config file
+        if not os.path.exists(self.port_file):
+            sg.popup_cancel(f'Port config file does not exist!: {self.port_file}')
+            return
+
+        port_input = self.get_port_from_file()
+
         # Menu layout
         menu = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
 
         # Select port
         row_port_selection = [
             [sg.Text('Select a port'),
-                sg.Input('', enable_events=True, key='-PORT_INPUT-', expand_x=True, justification='left'),
+                sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', expand_x=True, justification='left'),
                 sg.Button("Update Port")],
         ]
 
@@ -83,7 +93,7 @@ class InterfaceCreatorGUI():
                 self.popup_generate(self.window['-MULTILINE-'].get())
             elif event == 'Update Port':
                 port = self.window["-PORT_INPUT-"].get()
-                print(port)
+                self.set_port_to_file(port)
             elif event == 'Exit':
                 break
             # ----------------- Menu choices -----------------
@@ -105,6 +115,17 @@ class InterfaceCreatorGUI():
 
         self.window.close()
     
+    def get_port_from_file(self):
+        with open(self.port_file, "rt", encoding='utf-8') as f:
+            port_input = f.read()
+            port_input = str(int(port_input))
+        return port_input
+
+    def set_port_to_file(self, port):
+        with open(self.port_file, "wt", encoding='utf-8') as f:
+            print(f"Setting port to {port}")
+            f.write(port)
+
     def update_selected_filename(self, filenum, filepath):
         # Get file name (w/o path)
         filename = self.filenames_only[filenum]
