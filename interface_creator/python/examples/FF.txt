@@ -1,0 +1,25 @@
+Status.IR_FPS
+IR_Telem.Frame
+IR_Telem.Lat
+IR_Telem.Lon
+IR_Telem.Alt
+IR_Telem.Azimuth
+IR_Telem.Pitch
+IR_Telem.Roll
+M3D.Requested frame
+M3D.Solved frame
+S:M3D.Status
+M3D.Took
+M3D.Grade
+M3D.render_time
+M3D.correleation_time
+M3D.peak_time
+M3D.voting_time
+M3D.total_time
+M3D.num_of_creators
+M3D.lat
+M3D.lon
+M3D.alt
+M3D.azimuth
+M3D.pitch
+M3D.roll
