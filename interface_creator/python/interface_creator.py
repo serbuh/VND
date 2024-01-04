@@ -48,7 +48,7 @@ class InterfaceCreatorGUI():
         col_files_list = [
             [sg.Text('Select interface')],
             [sg.Listbox(values=self.filenames_only, size=(30, 30), key='-LISTBOX-', enable_events=True)],
-            [sg.Button('Prev', size=(8, 2)), sg.Button('Next', size=(8, 2)),
+            [sg.Button('Prev', size=(8, 1)), sg.Button('Next', size=(8, 1)),
                 sg.Text('File 1 of {}'.format(len(self.file_paths)), size=(15, 1), key='-FILENUM-')]
         ]
         
@@ -56,7 +56,7 @@ class InterfaceCreatorGUI():
         col_file_content = [
             [sg.Text("Select something", key='-FILENAME-')],
             [sg.Multiline("", size=(80, 32), key='-MULTILINE-')],
-            [sg.Button('Generate', size=(8, 2))],
+            [sg.Button('Generate', key='-GEN_BTN-', size=(8, 1), disabled=True), sg.Push(), sg.Button('Exit', size=(8, 1), button_color="red")],
         ]
 
         layout = [[sg.Menu(menu)], row_port_selection, [sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]]
@@ -89,7 +89,7 @@ class InterfaceCreatorGUI():
                 filepath = os.path.join(self.interfaces_folder, values['-LISTBOX-'][0])
                 filenum = self.file_paths.index(filepath)
                 self.update_selected_filename(filenum, filepath)
-            elif event == 'Generate':
+            elif event == '-GEN_BTN-':
                 self.popup_generate(self.window['-MULTILINE-'].get())
             elif event == 'Update Port':
                 port = self.window["-PORT_INPUT-"].get()
@@ -144,6 +144,8 @@ class InterfaceCreatorGUI():
         except Exception as e:
             print("Error: ", e)
 
+        self.window['-GEN_BTN-'].update(disabled=False)
+
     def get_files_from_folder(self, interfaces_folder):
         file_paths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
         filenames_only = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
@@ -152,7 +154,7 @@ class InterfaceCreatorGUI():
     def popup_generate(self, text):
         layout = [
             [sg.Multiline(text, size=(80, 32), key='-FINAL_CONTENT-'),],
-            [sg.Button("Write")],
+            [sg.Button("Write", button_color="green")],
         ]
         win = sg.Window("Generate", layout, modal=True, finalize=True)
 
