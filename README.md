@@ -9,31 +9,45 @@ or if already in cloned project:
 `git submodule update --init --recursive`   
 If sumbodule is somehow not accessable due to permissions issues - try downloading it manually.   
 
-# Prerequisites
-* Installed Node.js: https://nodejs.org/en/download   
+# Installs, Prerequisites
 Tested with:   
 `node v18.18.0, v18.18.2, v20.6.1`   
 `npm v9.8.1, v10.1.0`   
-* Updated browser (Sometimes there are issues with the older versions)
-* Install node modules (in case that you are using the dev version of VND and OpenMCT)   
 
-Telemetry Server
+* Donload Node.js   
+Download page: https://nodejs.org/en/download   
+[for Ubuntu] download e.g.   
+https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
+```
+sudo tar -xvf node-v20.10.0-linux-x64.tar.xz
+sudo ln -f -s <path to extracted node>/node-v20.10.0-linux-x64/bin/node /usr/local/bin/node
+```
+* Updated browser   
+  (Sometimes there are issues with the older versions)
+* Install node modules   
+  (See below)   
+
+Install node modules for Telemetry Server
 ```
 cd VND/telemetry_server
 npm install
 ```
-OpenMCT
+Install node modules for OpenMCT
 ```
 cd VND/openmct
 npm install
 ```
 
 # Define messages interface
-### Example of definig message interface for `dashboard_sim_sender.py` 
-You need to define a json for openmct (same file is used by telemetry server).   
-You can edit the file manually. The file has lots of fields. So there is a simpler way of creating that json.
-1) Go to `openmct/messages_interface`
-2) Add lines to `fields_in.txt`   
+Use interface_creator tool. The tool takes simple format (look at `interface_creator/python/examples/...`) and turns it into OpenMCT json format (`CVASDictionary.json`)   
+
+Python version that uses (requires pip package PySimpleGUI):   
+`run_interface_creator_py.bat`   
+
+Or exe version:   
+`run_interface_creator_exe.bat`   
+
+Simple format means:
 * each field means one message type
 * default message type is float (described as 'integer' in json. Have no idea why)
 * If you want to send a string, not a float - use 'S:' prefix. That will tell the script to put a 'string' type in json
@@ -48,7 +62,6 @@ Compass.yaw
 Compass.telem_azimuth
 Compass.azimuth_out
 ```
-1) run `python generate_from_list.py`. Output will be generated in `CVASdictionary.json`
 
 # Start VND
 Start Telemetry Server
