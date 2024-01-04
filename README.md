@@ -19,7 +19,9 @@ Download page: https://nodejs.org/en/download
 [for Ubuntu] download e.g.   
 https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
 ```
+# extract node to some folder
 sudo tar -xvf node-v20.10.0-linux-x64.tar.xz
+# link to that node version
 sudo ln -f -s <path to extracted node>/node-v20.10.0-linux-x64/bin/node /usr/local/bin/node
 ```
 * Updated browser   
