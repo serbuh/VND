@@ -13,7 +13,7 @@ class InterfaceCreatorGUI():
     def __init__(self):
         # Get the interfaces files folder
         self.interfaces_folder = os.path.join(".", "examples")
-        self.port_file = os.path.join("..", "telemetry_server", "port_config.txt")
+        self.port_file = os.path.join("..", "..", "telemetry_server", "port_config.txt")
         
         # Check existence of interfaces folder
         if not os.path.exists(self.interfaces_folder):
@@ -40,7 +40,7 @@ class InterfaceCreatorGUI():
         # Select port
         row_port_selection = [
             [sg.Text('Select a port'),
-                sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', expand_x=True, justification='left'),
+                sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', justification='left'),
                 sg.Button("Update Port")],
         ]
 
