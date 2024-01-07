@@ -9,6 +9,14 @@ or if already in cloned project:
 `git submodule update --init --recursive`   
 If sumbodule is somehow not accessable due to permissions issues - try downloading it manually.   
 
+# Docker
+
+Save docker (On deployment machine):
+`docker save -o vnd-docker.tar node:20`
+
+Load docker (On Stand Alone machine):
+`docker load -i vnd-docker.tar`
+
 # Installs, Prerequisites
 Tested with:   
 `node v18.18.0, v18.18.2, v20.6.1`   
