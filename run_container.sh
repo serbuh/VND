@@ -1,9 +1,13 @@
-# restart container
-docker container rm -f vnd-docker
+# Remove previous container if exists
+docker container rm -f vnd-docker 2> /dev/null || true
+
+# Run container
 docker run -dt --name vnd-docker -v$PWD:$PWD --net=host vnd-docker-2024-01-07 
 
-docker exec -it -w $PWD vnd-docker ./run.sh
+# Exec running script in container
+docker exec -it -w $PWD vnd-docker ./apps.sh
 
+# Wait for killing command
 read -p "Press enter to kill container"
 docker container rm -f vnd-docker
 
