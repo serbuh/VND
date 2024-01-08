@@ -1,5 +1,6 @@
 @ECHO OFF
-set /p Version=<version/version.txt
+cd ..
+set /p Version=<deploy/version.txt
 echo Preparing version %Version%
 
 :start

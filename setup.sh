@@ -6,6 +6,9 @@ docker exec -it -w $PWD vnd-docker ./run.sh
 
 read -p "Press enter to kill container"
 docker container rm -f vnd-docker
+
+
+################################################################################
 exit 0
 
 # Build image from Dockerfile
