@@ -1,6 +1,7 @@
 import time
 import socket
 import json
+import math
 
 # UDP connection class
 class Dashboard():
@@ -37,6 +38,7 @@ while True:
     status_dict["Status.Counter"] = (counter, 0)
     status_dict["Compass.telem_azimuth"] = ((0.5 * counter) % 360, 0)
     status_dict["Compass.yaw"] = (360 - status_dict["Compass.telem_azimuth"][0], 0)
+    status_dict["General.Sinus"] = (math.sin(math.radians(counter)), 0)
 
     # Sending dict
     print("Sending {}".format(status_dict))
