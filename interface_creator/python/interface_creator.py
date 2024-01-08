@@ -7,7 +7,8 @@ except:
     input()
     exit()
 
-from generate_from_list import generate_openmct_json
+from generate_from_list import generate_openmct_json, get_files_from_folder
+
 
 class InterfaceCreatorGUI():
     def __init__(self):
@@ -21,7 +22,7 @@ class InterfaceCreatorGUI():
             return
         
         # Get list of interface examples
-        self.file_paths, self.filenames_only = self.get_files_from_folder(self.interfaces_folder)
+        self.file_paths, self.filenames_only = get_files_from_folder(self.interfaces_folder)
         
         if len(self.file_paths) == 0:
             sg.popup(f'No config files in folder {self.interfaces_folder}')
@@ -102,7 +103,7 @@ class InterfaceCreatorGUI():
                 if newfolder is None:
                     continue
                 
-                self.file_paths, self.filenames_only = self.get_files_from_folder(newfolder)
+                self.filenames_only, self.file_paths = get_files_from_folder(newfolder)
 
                 self.window['-LISTBOX-'].update(values=self.filenames_only)
                 self.window.refresh()
@@ -145,11 +146,6 @@ class InterfaceCreatorGUI():
             print("Error: ", e)
 
         self.window['-GEN_BTN-'].update(disabled=False)
-
-    def get_files_from_folder(self, interfaces_folder):
-        file_paths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
-        filenames_only = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
-        return file_paths, filenames_only
 
     def popup_generate(self, text):
         layout = [

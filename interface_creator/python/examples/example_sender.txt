@@ -1,0 +1,7 @@
+Status.Counter
+General.Sinus
+S:Status.FOV
+S:Status.Sensor
+Compass.yaw
+Compass.telem_azimuth
+Compass.azimuth_out

@@ -2,7 +2,7 @@ from typing import TextIO
 import os
 
 # Constant output file
-out_file = os.path.join("..", "openmct", "messages_interface", "CVASdictionary.json")
+out_file = os.path.join("..", "..", "openmct", "messages_interface", "openmct_interface.json")
 
 # Global
 prefix = """{
@@ -87,13 +87,37 @@ def generate_openmct_json(in_lines:str):
 
     print("FINISHED")
 
+def get_files_from_folder(interfaces_folder):
+    '''
+    Get the list of available txt files
+    '''
+    fullpaths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
+    filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
+    return filenames, fullpaths
 
 if __name__ == "__main__":
-    in_file = "fields_in.txt"
+    interfaces_folder = os.path.join(".", "examples")
+    filenames, fullpaths = get_files_from_folder(interfaces_folder)
+    print("Available files:")
+    for num, filename, fullpath in zip(enumerate(filenames), filenames, fullpaths):
+        print(f"{num[0]:>4} : {filename}")
+    choice = input(f"Choose file number:")
+    
+    try:
+        choice = int(choice)
+        fullpath = fullpaths[choice]
+        filename = filenames[choice]
+    except:
+        print(f"No such number: {choice}")
+        exit()
+    
+    approve = input(f"Will use <{filename}> [Y/n]")
+    if approve not in ["y", "Y", ""]:
+        print("Exit.")
+        exit()
 
-    print(f"Reading fields from {in_file}")
+    print(f"Reading fields from {filename}")
 
-    with open(in_file) as in_f:
-        in_lines = in_f.readlines()
-
+    with open(fullpath) as in_f:
+        in_lines = in_f.read()
         generate_openmct_json(in_lines)

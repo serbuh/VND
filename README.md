@@ -49,15 +49,17 @@ npm install
 ```
 
 # Define messages interface
-Use interface_creator tool. The tool takes simple format (look at `interface_creator/python/examples/...`) and turns it into OpenMCT json format (`CVASDictionary.json`)   
+Your options:   
+1) Edit manually `openmct/messages_interface/openmct_interface.json`
 
-Python version that uses (requires pip package PySimpleGUI):   
-`run_interface_creator_py.bat`   
+2) Use python interactive console app that turns "simple format" (`interface_creator/python/examples/...`) and generates OpenMCT json format from it.   
+Run: `interface_creator/python/generate_from_list.py`
+3) (Recommended) Use python GUI tool (requires pip package PySimpleGUI)   
+Run: `interface_creator/python/interface_creator.py`   
+Or: `runners/windows/run_interface_creator_py.bat`   
+Or: `runners/windows/run_interface_creator_exe.bat`   
 
-Or exe version:   
-`run_interface_creator_exe.bat`   
-
-Simple format means:
+"Simple format" spec
 * each field means one message type
 * default message type is float (described as 'integer' in json. Have no idea why)
 * If you want to send a string, not a float - use 'S:' prefix. That will tell the script to put a 'string' type in json
@@ -106,8 +108,8 @@ const config = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'messages_interface/CVASdictionary.json',
-          to: 'messages_interface/CVASdictionary.json'
+          from: 'messages_interface/openmct_interface.json',
+          to: 'messages_interface/openmct_interface.json'
         },
         {
           from: 'telemetry_plugin',
