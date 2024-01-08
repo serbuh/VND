@@ -1,5 +1,5 @@
 # Remove previous container if exists
-ver=2024-01-08
+ver=1.1.1
 echo Running image from: $ver
 docker container rm -f vnd-$ver-c 2> /dev/null || true
 
@@ -35,4 +35,10 @@ docker save vnd-$ver-image | gzip > vnd-$ver-image.tgz
 docker load -i vnd-$ver-image.tar
 or 
 gunzip -c vnd-$ver-image.tgz | docker load
+
+#kill all running containers
+docker kill $(docker ps -q)
+
+#delete all stopped containers
+docker rm $(docker ps -a -q)
 
