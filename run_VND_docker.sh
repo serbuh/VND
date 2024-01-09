@@ -1,6 +1,10 @@
-# Remove previous container if exists
-ver=1.1.1
+#!/bin/bash
+
+# Read version
+ver=`awk 'NR==1{ print }' deploy/version.txt`
 echo Running image from: $ver
+
+# Remove previous container if exists
 docker container rm -f vnd-$ver-c 2> /dev/null || true
 
 # Run container
@@ -24,7 +28,7 @@ docker build -t vnd-$ver-image . -f node.Dockerfile
 docker run -dt --name vnd-$ver-c -v$PWD:$PWD --net=host vnd-$ver-image
 
 # Exec docker
-docker exec -it vnd /bin/bash
+docker exec -it -w $PWD vnd-$ver-c bash
 
 # Save image to tar
 docker save -o vnd-$ver-image.tar vnd-$ver-image

@@ -3,6 +3,7 @@ RUN apt update && \
     apt install -y vim && \
     apt install -y pip && \
     apt install -y git && \
+    apt install -y python3-tk && \
     apt clean && rm -rf /var/lib/apt/lists/* && \
     rm /usr/lib/python3.11/EXTERNALLY-MANAGED && \
     pip install --no-cache-dir --upgrade pip && \
