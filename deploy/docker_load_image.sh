@@ -1,8 +1,8 @@
 #!/bin/bash
-ver=`awk 'NR==1{ print }' version.txt`
+img_ver=`awk 'NR==1{ print }' docker_version.txt`
 cd ..
 
 # Save image to tar
-echo Loading image vnd-$ver-image.tar
+echo Loading image vnd-$img_ver-image.tar
 sleep 1
-docker load -i vnd-$ver-image.tar
+docker load -i vnd-$img_ver-image.tar
