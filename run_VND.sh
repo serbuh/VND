@@ -1,5 +1,30 @@
 #!/bin/bash
 
+# Use -i flag for INTERACTIVE DOCKER MODE
+
+interactive=false
+while [[ $# -ge 1 ]]
+do
+  key="$1"
+  case $key in
+    
+    -i|interactive)
+        interactive=true
+        shift
+        ;;
+  esac
+  shift
+done
+
+if $interactive; then
+  echo "Interactive mode"
+  cmd=bash
+else
+  cmd=./apps.sh
+fi
+
+###############################################################################
+
 # Read version
 ver=`awk 'NR==1{ print }' deploy/version.txt`
 echo "Version v$ver"
@@ -17,7 +42,7 @@ xhost +
 docker run -dt --name $container_name -v$PWD:$PWD -v /tmp/.X11-unix:/tmp/.X11-unix:ro -e DISPLAY=unix$DISPLAY --net=host vnd-$img_ver-image
 
 # Exec running script in container
-docker exec -it -w $PWD $container_name ./apps.sh
+docker exec -it -w $PWD $container_name $cmd
 
 # Wait for killing command
 read -p "Press enter to kill container"

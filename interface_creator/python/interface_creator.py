@@ -148,6 +148,7 @@ class InterfaceCreatorGUI():
         self.window['-GEN_BTN-'].update(disabled=False)
 
     def popup_generate(self, text):
+        text = text.rstrip("\n") # Remove newline at the end (they appear in some versions of python/PySimpleGUI)
         layout = [
             [sg.Multiline(text, size=(80, 32), key='-FINAL_CONTENT-'),],
             [sg.Button("Write", button_color="green")],
