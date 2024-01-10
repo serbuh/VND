@@ -93,11 +93,11 @@ def get_files_from_folder(interfaces_folder):
     '''
     fullpaths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
     filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
-    return filenames, fullpaths
+    return fullpaths, filenames
 
 if __name__ == "__main__":
     interfaces_folder = os.path.join(".", "examples")
-    filenames, fullpaths = get_files_from_folder(interfaces_folder)
+    fullpaths, filenames = get_files_from_folder(interfaces_folder)
     print("Available files:")
     for num, filename, fullpath in zip(enumerate(filenames), filenames, fullpaths):
         print(f"{num[0]:>4} : {filename}")

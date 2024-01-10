@@ -103,7 +103,7 @@ class InterfaceCreatorGUI():
                 if newfolder is None:
                     continue
                 
-                self.filenames_only, self.file_paths = get_files_from_folder(newfolder)
+                self.file_paths, self.filenames_only = get_files_from_folder(newfolder)
 
                 self.window['-LISTBOX-'].update(values=self.filenames_only)
                 self.window.refresh()

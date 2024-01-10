@@ -7,8 +7,11 @@ echo Running image from: $ver
 # Remove previous container if exists
 docker container rm -f vnd-$ver-c 2> /dev/null || true
 
+# Allow all users to access X11 Server
+xhost +
+
 # Run container
-docker run -dt --name vnd-$ver-c -v$PWD:$PWD --net=host vnd-$ver-image
+docker run -dt --name vnd-$ver-c -v$PWD:$PWD -v /tmp/.X11-unix:/tmp/.X11-unix:ro -e DISPLAY=unix$DISPLAY --net=host vnd-$ver-image
 
 # Exec running script in container
 docker exec -it -w $PWD vnd-$ver-c ./apps.sh
