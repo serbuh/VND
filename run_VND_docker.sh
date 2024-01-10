@@ -3,22 +3,23 @@
 # Read version
 ver=`awk 'NR==1{ print }' deploy/version.txt`
 echo Running image from: $ver
+container_name=vnd-$ver-c
 
 # Remove previous container if exists
-docker container rm -f vnd-$ver-c 2> /dev/null || true
+docker container rm -f $container_name 2> /dev/null || true
 
 # Allow all users to access X11 Server
 xhost +
 
 # Run container
-docker run -dt --name vnd-$ver-c -v$PWD:$PWD -v /tmp/.X11-unix:/tmp/.X11-unix:ro -e DISPLAY=unix$DISPLAY --net=host vnd-$ver-image
+docker run -dt --name $container_name -v$PWD:$PWD -v /tmp/.X11-unix:/tmp/.X11-unix:ro -e DISPLAY=unix$DISPLAY --net=host vnd-$ver-image
 
 # Exec running script in container
-docker exec -it -w $PWD vnd-$ver-c ./apps.sh
+docker exec -it -w $PWD $container_name ./apps.sh
 
 # Wait for killing command
 read -p "Press enter to kill container"
-docker container rm -f vnd-$ver-c
+docker container rm -f $container_name
 
 
 exit 0
