@@ -36,31 +36,34 @@ class InterfaceCreatorGUI():
         port_input = self.get_port_from_file()
 
         # Menu layout
-        menu = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
+        menu_content = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
+        menu = sg.Menu(menu_content)
 
         # Select port
         row_port_selection = [
-            [sg.Text('Select a port'),
-                sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', justification='left'),
-                sg.Button("Update Port")],
+            sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', justification='left'),
+            sg.Button("Update Port")
         ]
+        port_frame = sg.Frame("Port", [row_port_selection])
 
-        # File list column
+        # File list
         col_files_list = [
-            [sg.Text('Select interface')],
+            [sg.Text('File 1 of {}'.format(len(self.file_paths)), key='-FILENUM-')],
             [sg.Listbox(values=self.filenames_only, size=(30, 30), key='-LISTBOX-', enable_events=True)],
-            [sg.Button('Prev', size=(8, 1)), sg.Button('Next', size=(8, 1)),
-                sg.Text('File 1 of {}'.format(len(self.file_paths)), size=(15, 1), key='-FILENUM-')]
+            [sg.Button('Use this', key='-GEN_BTN-', size=(8, 1), disabled=True, button_color="green")],
         ]
-        
-        # define layout, show and read the window
+        # Content of file
         col_file_content = [
             [sg.Text("Select something", key='-FILENAME-')],
             [sg.Multiline("", size=(80, 32), key='-MULTILINE-')],
-            [sg.Button('Generate', key='-GEN_BTN-', size=(8, 1), disabled=True), sg.Push(), sg.Button('Exit', size=(8, 1), button_color="red")],
         ]
+        files_frame = sg.Frame("Select interface", [[sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]])
+        
+        # Exit
+        col_exit_content = [[sg.Button('Exit', size=(8, 1), button_color="red")]]
+        col_exit = sg.Col(col_exit_content, justification="right")
 
-        layout = [[sg.Menu(menu)], row_port_selection, [sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]]
+        layout = [[menu], [port_frame], [files_frame], [col_exit]]
 
         self.window = sg.Window('Config Generator', layout, return_keyboard_events=True, use_default_focus=False)
     
@@ -76,12 +79,12 @@ class InterfaceCreatorGUI():
             if event == sg.WIN_CLOSED:
                 break
             # --------------------- Buttons ---------------------
-            elif event in ('Next', 'MouseWheel:Down', 'Down:40', 'Next:34') and filenum < len(self.file_paths)-1:
+            elif event in ('MouseWheel:Down', 'Down:40') and filenum < len(self.file_paths)-1:
                 filenum += 1
                 filepath = os.path.join(self.interfaces_folder, self.filenames_only[filenum])
                 self.window['-LISTBOX-'].update(set_to_index=filenum, scroll_to_index=filenum)
                 self.update_selected_filename(filenum, filepath)
-            elif event in ('Prev', 'MouseWheel:Up', 'Up:38', 'Prior:33') and filenum > 0:
+            elif event in ('MouseWheel:Up', 'Up:38') and filenum > 0:
                 filenum -= 1
                 filepath = os.path.join(self.interfaces_folder, self.filenames_only[filenum])
                 self.window['-LISTBOX-'].update(set_to_index=filenum, scroll_to_index=filenum)
