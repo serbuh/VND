@@ -1,7 +1,11 @@
 Status.Counter
-General.Sinus
-S:Status.FOV
-S:Status.Sensor
-Compass.yaw
-Compass.telem_azimuth
-Compass.azimuth_out
+S:Status.State
+S:Telem.vector
+Telem.Sinus
+Telem.Sinus_noisy
+Telem.Sinus_drifting
+Location.lat
+Location.lon
+Location.alt
+Compass.azimuth
+Compass.azimuth2

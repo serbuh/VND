@@ -2,6 +2,7 @@ import time
 import socket
 import json
 import math
+import random
 
 # UDP connection class
 class Dashboard():
@@ -22,23 +23,53 @@ dashboard = Dashboard(dashboard_channel)
 counter = 0
 status_dict = {
     "Status.Counter" : (counter, 0),
-    "General.Sinus" : (0, 0),
-    "Status.FOV" : ((60.5, 55.6), 0),
-    "Status.Sensor" : ("VIS", 0),
-    "Compass.yaw" : (0.0, 0),
-    "Compass.telem_azimuth" : (0.0, 0),
-    "Compass.azimuth_out" : (91.0, 0),
-    "This is.undefined value" : (404, 0),
+    "Status.State" : ("GOOD", 0),
+    "Telem.vector" : ((60.5, 55.6), 0),
+    "Telem.Sinus" : (0, 0),
+    "Telem.Sinus_noisy" : (0, 0),
+    "Telem.Sinus_drifting" : (0, 0),
+    "Location.lat": (0, 0),
+    "Location.lon": (0, 0),
+    "Location.alt": (0, 0),
+    "Compass.azimuth" : (0.0, 0),
+    "Compass.azimuth2" : (0.0, 0),
+    "This_is.undefined_value" : (404, 0),
 }
 
 
 # Modify telemetry each iteration of the loop
+combined_noise = 0
 while True:
+    # Play with values
+    state = int( counter / 100 ) % 3
+    if state == 0:
+        status = "BAD"
+    elif state == 1:
+        status = "NORMAL"
+    else:
+        status = "GOOD"
     
+    
+    azimuth = (0.5 * counter) % 360
+    sinus = math.sin(math.radians(counter/2))
+    
+    noise = (0.5-random.random())/5
+    sinus_noisy = sinus + noise
+
+    combined_noise += noise
+    sinus_drifting = sinus + combined_noise
+
+    # Update dictionary
     status_dict["Status.Counter"] = (counter, 0)
-    status_dict["Compass.telem_azimuth"] = ((0.5 * counter) % 360, 0)
-    status_dict["Compass.yaw"] = (360 - status_dict["Compass.telem_azimuth"][0], 0)
-    status_dict["General.Sinus"] = (math.sin(math.radians(counter)), 0)
+    status_dict["Status.State"] = (status, 0)
+    status_dict["Telem.Sinus"] = (sinus, 0)
+    status_dict["Telem.Sinus_noisy"] = (sinus_noisy, 0)
+    status_dict["Telem.Sinus_drifting"] = (sinus_drifting, 0)
+    status_dict["Location.lat"] = (31.0 ,0)
+    status_dict["Location.lon"] = (31.0 ,0)
+    status_dict["Location.alt"] = (31.0 ,0)
+    status_dict["Compass.azimuth"] = (azimuth, 0)
+    status_dict["Compass.azimuth2"] = (360 - azimuth, 0)
 
     # Sending dict
     print("Sending {}".format(status_dict))
