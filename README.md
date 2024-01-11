@@ -1,100 +1,128 @@
 # VND - Very Nice Dashboard
 
-Web based customized implementation of NASA's telemetry visualization tool OpenMCT: https://nasa.github.io/openmct/
+Web based customized implementation of NASA's telemetry visualization tool    
+OpenMCT official git: https://nasa.github.io/openmct/
 
-Don't forget to fetch submodules   
-while cloning:   
+NOTE:   
+Don't forget to get openmct as a submodule.   
+If sumbodule is somehow not accessable due to permissions issues - try downloading it manually into `openmct` folder   
+
+Fetch submodules while cloning:   
 `git clone --recurse-submodules <git url>`   
-or if already in cloned project:   
+Fetch submodules for already cloned project:   
 `git submodule update --init --recursive`   
-If sumbodule is somehow not accessable due to permissions issues - try downloading it manually.   
 
-# Docker
-
-Save docker (On deployment machine):
-`docker save -o vnd-docker.tar node:20`
-
-Load docker (On Stand Alone machine):
-`docker load -i vnd-docker.tar`
-
-# Installs, Prerequisites
 Tested with:   
 `node v18.18.0, v18.18.2, v20.6.1`   
 `npm v9.8.1, v10.1.0`   
 
-* Donload Node.js   
-Download page: https://nodejs.org/en/download   
-[for Ubuntu] download e.g.   
-https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
-```
-# extract node to some folder
-sudo tar -xvf node-v20.10.0-linux-x64.tar.xz
-# link to that node version
-sudo ln -f -s <path to extracted node>/node-v20.10.0-linux-x64/bin/node /usr/local/bin/node
-```
-* Updated browser   
-  (Sometimes there are issues with the older versions)
-* Install node modules   
-  (See below)   
+# Install - Windows
+Prerequisites:
+* Updated browser!
+* Node.js (https://nodejs.org/en/download)
+* [optional] python with PySimpleGUI package
 
-Install node modules for Telemetry Server
+# Install - linux
+Prerequisites:
+* Updated browser!
+* Docker engine (verify installation: `sudo docker run hello-world`)
+
+### Following installations are not needed if you are using docker
+* Node.js
+* python with PySimpleGUI package
+
+### Node.js manual installatiobn
+1) Dowload https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
+2) Extract node to some folder   
+`sudo tar -xvf node-v20.10.0-linux-x64.tar.xz`
+3) Link to that node version   
+`sudo ln -f -s <path to extracted node>/node-v20.10.0-linux-x64/bin/node /usr/local/bin/node`
+
+
+### Install node modules
+Requires internet connection.   
+OR   
+If you got distributed version of VND for StandAlone machines - this step is already done for you.   
+
+To install modules from internet:
 ```
-cd VND/telemetry_server
-npm install
-```
-Install node modules for OpenMCT
-```
-cd VND/openmct
-npm install
+cd telemetry_server && npm install
+cd ..
+cd openmct && npm install
 ```
 
-# Define messages interface
+# Define messages interface and port
+Use "simple interface format" (`interface_creator/python/examples/...`) and generate OpenMCT json format from it.
 Your options:   
-1) Edit manually `openmct/messages_interface/openmct_interface.json`
+1) [Recommended] Use python GUI tool   
+[linux docker] `./run_interface_creator.sh`   
+[windows] `runners/windows/run_interface_creator_py.bat`   
+[windows] `runners/windows/run_interface_creator_exe.bat`   
+[manual] `cd interface_creator/python && python interface_creator.py`   
 
-2) Use python interactive console app that turns "simple format" (`interface_creator/python/examples/...`) and generates OpenMCT json format from it.   
-Run: `interface_creator/python/generate_from_list.py`
-3) (Recommended) Use python GUI tool (requires pip package PySimpleGUI)   
-Run: `interface_creator/python/interface_creator.py`   
-Or: `runners/windows/run_interface_creator_py.bat`   
-Or: `runners/windows/run_interface_creator_exe.bat`   
+1) Use python console tool   
+[linux docker] `./run_interface_creator.sh -c`   
+[manual] `cd interface_creator/python && python generate_from_list.py`
 
-"Simple format" spec
+1) Edit openmct json   
+`openmct/messages_interface/openmct_interface.json`   
+NOTE: Not recomended to do it manually. This approach is recommended if you have your own interface tool that converts your interface to openmct json.
+
+
+### "Simple interface format" spec
 * each field means one message type
 * default message type is float (described as 'integer' in json. Have no idea why)
 * If you want to send a string, not a float - use 'S:' prefix. That will tell the script to put a 'string' type in json
 ```
-Telem.Video FPS
-Telem.Telem FPS
-Telem.frame
-Status.FOV
-S:Status.Sensor
-Status.Counter
-Compass.yaw
-Compass.telem_azimuth
-Compass.azimuth_out
+SomeSection.Some field name
+status.the_status
+location.lat
+location.lon
+location.alt
+S:Status.State
+compass.azimuth
 ```
 
-# Start VND
-Start Telemetry Server
+# Run - windows
+Run OpenMCT   
+`runners/windows/run_openmct.bat`   
+Run VND   
+`runners/windows/run_telemetry_server.bat`
+
+# Run - linux docker
+Run VND + OpenMCT   
+`./run_VND.sh`   
+[for debug] Run docker in interactive mode   
+`./run_VND.sh -i` 
+
+# Run - manually
+Run OpenMCT
 ```
-cd VND/telemetry_server
-npm start
+cd openmct && npm start
 ```
-Start OpenMCT
+Start Telemetry Server   
+(for the first time you need to wait untill openMCT finishes the build for the `distr` folder)
 ```
-cd VND/openmct
-npm start
+cd telemetry_server && npm start
 ```
-Open OpenMCT webpage in a browser
+# Open OpenMCT in a browser
 ```
 localhost:8080
 ```
-# Telemetry example
+
+# Telemetry sender example
 To send some telemetry to VND start:
 ```
-python dashboard_sim_sender.py
+[linux] python dashboard_sim_sender.py
 ```
+
+# Docker cheetsheet for deploy
+
+Save docker (On deployment machine):   
+`docker save -o vnd-docker.tar node:20`
+
+Load docker (On Stand Alone machine):   
+`docker load -i vnd-docker.tar`
 
 # Technical info
 Changes that have been made to raw openMCT version:   
