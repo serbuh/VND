@@ -154,25 +154,15 @@ In `openmct/index.html` added lines:
 
 In `openmct/src/plugins/plugins.js` added lines:
 ```
-define([
-  ...
-  '../../telemetry_plugin/historical-telemetry-plugin',
-  '../../telemetry_plugin/realtime-telemetry-plugin',
-  '../../telemetry_plugin/CVAS-plugin'
-  ], function (
-  ...
-  HistoricalTelemetryPlugin,
-  RealtimeTelemetryPlugin,
-  CVASPlugin
-) {
-  const plugins = {};
-  ...
-  plugins.HistoricalTelemetryPlugin = HistoricalTelemetryPlugin;
-  plugins.RealtimeTelemetryPlugin = RealtimeTelemetryPlugin;
-  plugins.CVASPlugin = CVASPlugin;
+import HistoricalTelemetryPlugin from '../../telemetry_plugin/historical-telemetry-plugin.js';
+import RealtimeTelemetryPlugin from '../../telemetry_plugin/realtime-telemetry-plugin.js';
+import CVASPlugin from '../../telemetry_plugin/CVAS-plugin.js';
 
-  return plugins;
-});
+...
+
+plugins.HistoricalTelemetryPlugin = HistoricalTelemetryPlugin;
+plugins.RealtimeTelemetryPlugin = RealtimeTelemetryPlugin;
+plugins.CVASPlugin = CVASPlugin;
 ```
 
 # Links
