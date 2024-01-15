@@ -65,7 +65,7 @@ Your options:
 [manual] `cd interface_creator/python && python generate_from_list.py`
 
 1) Edit openmct json   
-`openmct/messages_interface/openmct_interface.json`   
+`openmct/telemetry_plugin/openmct_interface.json`   
 NOTE: Not recomended to do it manually. This approach is recommended if you have your own interface tool that converts your interface to openmct json.
 
 
@@ -135,10 +135,6 @@ const config = {
     new VueLoaderPlugin(),
     new CopyWebpackPlugin({
       patterns: [
-        {
-          from: 'messages_interface/openmct_interface.json',
-          to: 'messages_interface/openmct_interface.json'
-        },
         {
           from: 'telemetry_plugin',
           to: 'telemetry_plugin'

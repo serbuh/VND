@@ -2,7 +2,7 @@ from typing import TextIO
 import os
 
 # Constant output file
-out_file = os.path.join("..", "..", "openmct", "messages_interface", "openmct_interface.json")
+out_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
 
 # Global
 prefix = """{
@@ -72,7 +72,7 @@ def generate_openmct_json(in_lines:str):
                 field_name = field_name[len(string_prefix):]
                 open_mct_type = "string"
             else:
-                open_mct_type = "integer"
+                open_mct_type = "number"
             print(f"{open_mct_type}: {field_name}")
 
             # write
