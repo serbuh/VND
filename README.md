@@ -144,8 +144,8 @@ const config = {
 In `openmct/index.html` added lines:
 ```
     openmct.install(openmct.plugins.CVASPlugin());
-    openmct.install(openmct.plugins.HistoricalTelemetryPlugin('CVAS.telemetry', '/CVASHistory/', 'localhost'));
-    openmct.install(openmct.plugins.RealtimeTelemetryPlugin('CVAS.telemetry', '/CVASRealtime/', 'localhost'));
+    openmct.install(openmct.plugins.HistoricalTelemetryPlugin('TelemetryDomainObject', '/CVASHistory/', 'localhost'));
+    openmct.install(openmct.plugins.RealtimeTelemetryPlugin('TelemetryDomainObject', '/CVASRealtime/', 'localhost'));
 ```
 
 In `openmct/src/plugins/plugins.js` added lines:

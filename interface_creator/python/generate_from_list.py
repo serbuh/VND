@@ -6,7 +6,7 @@ out_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_inte
 
 # Global
 prefix = """{
-    "name": "CVAS",
+    "name": "PredefinedTelemetry",
     "key": "pl",
     "measurements": [
 """
