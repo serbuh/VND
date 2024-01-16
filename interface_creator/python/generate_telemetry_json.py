@@ -2,53 +2,6 @@ import typing
 import os
 import json
 
-# Global
-prefix = """{
-    "name": "PredefinedTelemetry",
-    "key": "pl",
-    "measurements": [
-"""
-
-# Global
-postfix = """
-    ]
-}
-"""
-
-def get_field_desc(key_name, type):
-    # Replace spaces
-    key_name = key_name.replace(" ", "_")
-    
-    return ( \
-"        {\n"
-f'            "name": "{key_name}",\n'
-f'            "key": "{key_name}",\n'
-'''
-            "values": [
-                {
-                    "key": "value",
-                    "name": "Value",
-                    "units": "unit",
-'''
-f'                    "format": "{type}",\n'
-'''                    "hints": {
-                        "range": 1
-                    }
-                },
-                {
-                    "key": "utc",
-                    "source": "timestamp",
-                    "name": "Timestamp",
-                    "format": "utc",
-                    "hints": {
-                        "domain": 1
-                    }
-                }
-            ]
-        }'''
-    )
-
-
 class JSON_Creator():
     def __init__(self):
         # Constant output file
@@ -83,11 +36,14 @@ class JSON_Creator():
 
     def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> None:
         
-        # Write prefix
-        out_f.write(prefix)
+        dictionary = {
+            "name": "PredefinedTelemetry",
+            "key": "pl",
+            "measurements": []
+        }
 
         # Iterate over each field name
-        print("Fields list:")
+        print("Fields:")
         for i, field_name in enumerate(in_lines):
             # Remove new line symbol
             field_name = field_name.strip("\n")
@@ -101,15 +57,41 @@ class JSON_Creator():
                 open_mct_type = "number"
             print(f"{open_mct_type}: {field_name}")
 
-            # write
-            out_f.write(get_field_desc(field_name, open_mct_type))
+            measurement = self._generate_measurement(field_name, open_mct_type)
+            dictionary["measurements"].append(measurement)
 
-            # Add comma only in between the field description dicts
-            if i != len(in_lines) - 1:
-                out_f.write(",\n")
+        # Serializing json
+        json_object = json.dumps(dictionary, indent=4)
 
-        # Write postfix
-        out_f.write(postfix)
+        out_f.write(json_object)
+
+    def _generate_measurement(self, field_name, open_mct_type):
+        measurement = {
+            "name": field_name,
+            "key": field_name,
+            "values": [
+                {
+                    "key": "value",
+                    "name": "Value",
+                    "units": "unit",
+                    "format": open_mct_type,
+                    "hints": {
+                        "range": 1
+                    }
+                },
+                {
+                    "key": "utc",
+                    "source": "timestamp",
+                    "name": "Timestamp",
+                    "format": "utc",
+                    "hints": {
+                        "domain": 1
+                    }
+                }
+            ]
+        }
+        return measurement
+
 
 
 if __name__ == "__main__":
@@ -138,3 +120,48 @@ if __name__ == "__main__":
     # Create json
     json_creator = JSON_Creator()
     json_creator.geberate_json_from_path(fullpath)
+
+
+# TODO enums
+"""
+        {
+            "name": "Status.StateEnum",
+            "key": "Status.StateEnum",
+
+            "values": [
+                {
+
+                    "key": "value",
+                    "name": "Value",
+                    "units": "unit",
+                    "format": "enum",
+                    "hints": {
+                        "range": 1
+                    },
+                    "enumerations": [
+                        {
+                            "string": "BAD",
+                            "value": "0"
+                        },
+                        {
+                            "string": "NORMAL",
+                            "value": "1"
+                        },
+                        {
+                            "string": "GOOD",
+                            "value": "2"
+                        }
+                    ]
+                },
+                {
+                    "key": "utc",
+                    "source": "timestamp",
+                    "name": "Timestamp",
+                    "format": "utc",
+                    "hints": {
+                        "domain": 1
+                    }
+                }
+            ]
+        },
+"""
