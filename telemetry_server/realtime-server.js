@@ -18,6 +18,7 @@ function RealtimeServer(spacecraft, port) {
 
         function notifySubscribers(point) {
             if (subscribed[point.id]) {
+                // console.log('realtime-server.js: push data to subscribed channel ' + point.id + ': time = ' + point.timestamp + ' value = ' + point.value);
                 ws.send(JSON.stringify(point));
             }
         }

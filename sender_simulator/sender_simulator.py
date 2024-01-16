@@ -24,6 +24,7 @@ counter = 0
 status_dict = {
     "Status.Counter" : (counter, 0),
     "Status.State" : ("GOOD", 0),
+    "Status.StateEnum" : (1, 0),
     "Telem.vector" : ((60.5, 55.6), 0),
     "Telem.Sinus" : (0, 0),
     "Telem.Sinus_noisy" : (0, 0),
@@ -44,10 +45,13 @@ while True:
     state = int( counter / 100 ) % 3
     if state == 0:
         status = "BAD"
+        status_enum = 0
     elif state == 1:
         status = "NORMAL"
+        status_enum = 1
     else:
         status = "GOOD"
+        status_enum = 2
     
     
     azimuth = (0.5 * counter) % 360
@@ -62,6 +66,7 @@ while True:
     # Update dictionary
     status_dict["Status.Counter"] = (counter, 0)
     status_dict["Status.State"] = (status, 0)
+    status_dict["Status.StateEnum"] = (status_enum, 0)
     status_dict["Telem.Sinus"] = (sinus, 0)
     status_dict["Telem.Sinus_noisy"] = (sinus_noisy, 0)
     status_dict["Telem.Sinus_drifting"] = (sinus_drifting, 0)

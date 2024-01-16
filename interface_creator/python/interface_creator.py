@@ -7,7 +7,7 @@ except:
     input()
     exit()
 
-from generate_from_list import generate_openmct_json, get_files_from_folder
+from generate_telemetry_json import JSON_Creator
 
 
 class InterfaceCreatorGUI():
@@ -22,7 +22,7 @@ class InterfaceCreatorGUI():
             return
         
         # Get list of interface examples
-        self.file_paths, self.filenames_only = get_files_from_folder(self.interfaces_folder)
+        self.file_paths, self.filenames_only = JSON_Creator.get_files_from_folder(self.interfaces_folder)
         
         if len(self.file_paths) == 0:
             sg.popup(f'No config files in folder {self.interfaces_folder}')
@@ -106,7 +106,7 @@ class InterfaceCreatorGUI():
                 if newfolder is None:
                     continue
                 
-                self.file_paths, self.filenames_only = get_files_from_folder(newfolder)
+                self.file_paths, self.filenames_only = JSON_Creator.get_files_from_folder(newfolder)
 
                 self.window['-LISTBOX-'].update(values=self.filenames_only)
                 self.window.refresh()
@@ -164,8 +164,9 @@ class InterfaceCreatorGUI():
                 break
             elif event == 'Write':
                 final_text = win['-FINAL_CONTENT-'].get()
-                # send text to generate_from_list
-                generate_openmct_json(final_text)
+                # send text to generate_telemetry_json
+                json_creator = JSON_Creator()
+                json_creator.generate_json_from_lines(final_text)
                 break
         win.close()
 

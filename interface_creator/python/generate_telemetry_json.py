@@ -1,8 +1,6 @@
-from typing import TextIO
+import typing
 import os
-
-# Constant output file
-out_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
+import json
 
 # Global
 prefix = """{
@@ -50,13 +48,41 @@ f'                    "format": "{type}",\n'
         }'''
     )
 
-def generate_openmct_json(in_lines:str):
-    in_lines = in_lines.splitlines() # Split the lines with \n
 
-    print(f"Writing resuls to json: {out_file}")
+class JSON_Creator():
+    def __init__(self):
+        # Constant output file
+        self.out_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
     
-    with open(out_file, "w") as out_f:
+    def geberate_json_from_path(self, fullpath):
+        with open(fullpath) as in_f:
+            in_lines = in_f.read()
+            
+            self.generate_json_from_lines(in_lines)
+    
+    def generate_json_from_lines(self, in_lines:str):            
+            
+            in_lines = in_lines.splitlines() # Split the lines with \n
 
+            print(f"Writing resuls to json: {self.out_file}")
+            
+            with open(self.out_file, "w") as out_f:
+
+                self.write_lines_to_json(in_lines, out_f)
+            
+            print("FINISHED")
+
+    @staticmethod
+    def get_files_from_folder(interfaces_folder):
+        '''
+        Get the list of available txt files
+        '''
+        fullpaths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
+        filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
+        return fullpaths, filenames
+
+    def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> None:
+        
         # Write prefix
         out_f.write(prefix)
 
@@ -85,19 +111,10 @@ def generate_openmct_json(in_lines:str):
         # Write postfix
         out_f.write(postfix)
 
-    print("FINISHED")
-
-def get_files_from_folder(interfaces_folder):
-    '''
-    Get the list of available txt files
-    '''
-    fullpaths = [os.path.join(interfaces_folder, f) for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
-    filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
-    return fullpaths, filenames
 
 if __name__ == "__main__":
     interfaces_folder = os.path.join(".", "examples")
-    fullpaths, filenames = get_files_from_folder(interfaces_folder)
+    fullpaths, filenames = JSON_Creator.get_files_from_folder(interfaces_folder)
     print("Available files:")
     for num, filename, fullpath in zip(enumerate(filenames), filenames, fullpaths):
         print(f"{num[0]:>4} : {filename}")
@@ -118,6 +135,6 @@ if __name__ == "__main__":
 
     print(f"Reading fields from {filename}")
 
-    with open(fullpath) as in_f:
-        in_lines = in_f.read()
-        generate_openmct_json(in_lines)
+    # Create json
+    json_creator = JSON_Creator()
+    json_creator.geberate_json_from_path(fullpath)

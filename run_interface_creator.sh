@@ -18,7 +18,7 @@ done
 
 if $console; then
   echo "Console mode"
-  run_py=generate_from_list.py
+  run_py=generate_telemetry_json.py
 else
   echo "GUI mode"
   run_py=interface_creator.py

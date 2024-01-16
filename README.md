@@ -62,7 +62,7 @@ Your options:
 
 1) Use python console tool   
 [linux docker] `./run_interface_creator.sh -c`   
-[manual] `cd interface_creator/python && python generate_from_list.py`
+[manual] `cd interface_creator/python && python generate_telemetry_json.py`
 
 1) Edit openmct json   
 `openmct/telemetry_plugin/openmct_interface.json`   
@@ -143,7 +143,7 @@ const config = {
 ```
 In `openmct/index.html` added lines:
 ```
-    openmct.install(openmct.plugins.CVASPlugin());
+    openmct.install(openmct.plugins.TelemetryDictionaryPlugin());
     openmct.install(openmct.plugins.HistoricalTelemetryPlugin('TelemetryDomainObject', '/CVASHistory/', 'localhost'));
     openmct.install(openmct.plugins.RealtimeTelemetryPlugin('TelemetryDomainObject', '/CVASRealtime/', 'localhost'));
 ```
@@ -152,13 +152,13 @@ In `openmct/src/plugins/plugins.js` added lines:
 ```
 import HistoricalTelemetryPlugin from '../../telemetry_plugin/historical-telemetry-plugin.js';
 import RealtimeTelemetryPlugin from '../../telemetry_plugin/realtime-telemetry-plugin.js';
-import CVASPlugin from '../../telemetry_plugin/CVAS-plugin.js';
+import TelemetryDictionaryPlugin from '../../telemetry_plugin/telemetry-dictionary-plugin.js';
 
 ...
 
 plugins.HistoricalTelemetryPlugin = HistoricalTelemetryPlugin;
 plugins.RealtimeTelemetryPlugin = RealtimeTelemetryPlugin;
-plugins.CVASPlugin = CVASPlugin;
+plugins.TelemetryDictionaryPlugin = TelemetryDictionaryPlugin;
 ```
 
 # Links
