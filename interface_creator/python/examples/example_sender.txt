@@ -1,5 +1,6 @@
 Status.Counter
 S:Status.State
+E:Status.StateEnum {BAD:0, NORMAL:1, GOOD:2}
 S:Telem.vector
 Telem.Sinus
 Telem.Sinus_noisy

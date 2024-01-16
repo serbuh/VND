@@ -34,6 +34,30 @@ class JSON_Creator():
         filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
         return fullpaths, filenames
 
+    def _enum_parse(self, line, enum_prefix):
+        field_name = line[len(enum_prefix):] # Cut off prefix
+        rpart = field_name.rpartition("{")
+        field_name = rpart[0] # take name before enum values ( "{...}" )
+        field_name = field_name.strip(" ") # Cut off whitespaces before and after field_name
+
+        # Parsing enum values
+        # NOTE: chose not to use json parsing here in order to avoid double quoutes for keys and values (i.e. {GOOD:0} instead of {"GOOD":"0"})
+        enum_values = rpart[2] # Get enum as a one string that ends with }
+        if not enum_values.endswith("}"):
+            print(f"Error. Enum parsing failed. Check syntax for:\nName: {rpart[0]}\nShould be between two curly braces: {rpart[1] + rpart[2]}")
+            exit()
+        enum_values = enum_values.strip("}") # Remove closing curly brace
+        enum_values = enum_values.split(",") # split to the list of values (comma separated)
+        enum_values = [ enum_val.strip(" ") for enum_val in enum_values ] # Strip whitespaces before and after
+        enum_values = [ enum_val.split(":") for enum_val in enum_values ]
+        # Syntax check
+        for enum_val in enum_values:
+            if len(enum_val) != 2:
+                print(f"Error in field {field_name}: Wrong enum val: {enum_val}")
+                exit()
+
+        return field_name, enum_values
+
     def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> None:
         
         dictionary = {
@@ -42,22 +66,28 @@ class JSON_Creator():
             "measurements": []
         }
 
+        # Prefixes definition
+        string_prefix = "S:"
+        enum_prefix = "E:"
+        
         # Iterate over each field name
         print("Fields:")
-        for i, field_name in enumerate(in_lines):
+        for line in in_lines:
             # Remove new line symbol
-            field_name = field_name.strip("\n")
+            line = line.strip("\n")
 
-            # String handling
-            string_prefix = "S:"
-            if field_name.startswith(string_prefix):
-                field_name = field_name[len(string_prefix):]
-                open_mct_type = "string"
-            else:
-                open_mct_type = "number"
-            print(f"{open_mct_type}: {field_name}")
+            # Handle types
+            if line.startswith(string_prefix): # String
+                field_name = line[len(string_prefix):] # Cut off prefix
+                measurement = self._generate_measurement(field_name, "string")
 
-            measurement = self._generate_measurement(field_name, open_mct_type)
+            elif line.startswith(enum_prefix): # Enum
+                field_name, enum_values = self._enum_parse(line, enum_prefix)
+                measurement = self._generate_measurement(field_name, "enum", enum_values)
+
+            else: # Number
+                measurement = self._generate_measurement(line, "number")
+
             dictionary["measurements"].append(measurement)
 
         # Serializing json
@@ -65,7 +95,7 @@ class JSON_Creator():
 
         out_f.write(json_object)
 
-    def _generate_measurement(self, field_name, open_mct_type):
+    def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         measurement = {
             "name": field_name,
             "key": field_name,
@@ -90,6 +120,18 @@ class JSON_Creator():
                 }
             ]
         }
+        if enum_values is not None:
+            measurement["values"][0]['enumerations'] = []
+            enum_values_str = ""
+            for e_val in enum_values:
+                enum_value_dict = {"string": e_val[0], "value": e_val[1]}
+                measurement["values"][0]['enumerations'].append(enum_value_dict)
+                enum_values_str += f" {e_val[0]}:{e_val[1]} "
+
+            print(f"{open_mct_type}: {field_name} ({enum_values_str})")
+        else:
+            print(f"{open_mct_type}: {field_name}")
+        
         return measurement
 
 
@@ -120,48 +162,3 @@ if __name__ == "__main__":
     # Create json
     json_creator = JSON_Creator()
     json_creator.geberate_json_from_path(fullpath)
-
-
-# TODO enums
-"""
-        {
-            "name": "Status.StateEnum",
-            "key": "Status.StateEnum",
-
-            "values": [
-                {
-
-                    "key": "value",
-                    "name": "Value",
-                    "units": "unit",
-                    "format": "enum",
-                    "hints": {
-                        "range": 1
-                    },
-                    "enumerations": [
-                        {
-                            "string": "BAD",
-                            "value": "0"
-                        },
-                        {
-                            "string": "NORMAL",
-                            "value": "1"
-                        },
-                        {
-                            "string": "GOOD",
-                            "value": "2"
-                        }
-                    ]
-                },
-                {
-                    "key": "utc",
-                    "source": "timestamp",
-                    "name": "Timestamp",
-                    "format": "utc",
-                    "hints": {
-                        "domain": 1
-                    }
-                }
-            ]
-        },
-"""
