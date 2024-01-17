@@ -1,3 +1,5 @@
+Status.State
+Status.Uptime
 Status.IR_FPS
 IR_Telem.Frame
 IR_Telem.Lat

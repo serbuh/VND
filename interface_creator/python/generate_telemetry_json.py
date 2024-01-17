@@ -96,6 +96,9 @@ class JSON_Creator():
         out_f.write(json_object)
 
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
+        # Replace spaces in field names (for the json)
+        field_name = field_name.replace(" ", "_")
+        
         measurement = {
             "name": field_name,
             "key": field_name,
