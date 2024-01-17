@@ -11,7 +11,7 @@ function CVAS() {
 
 	// read the keys from dictionary (of the compiled openmct)
 	let rawDict = fs.readFileSync('../openmct/dist/telemetry_plugin/openmct_interface.json')
-	let input_port = fs.readFileSync('port_config.txt', "utf8");
+	let input_port = parseInt(fs.readFileSync('port_config.txt', "utf8"));
 	let dict = JSON.parse(rawDict)
 	//console.log(dict.measurements.map(obj => obj.key))
 
@@ -126,7 +126,7 @@ function CVAS() {
 	// port specified in the associated python script
 	server.bind(input_port);
 
-    console.log("CVAS initialized!");
+    console.log("\nTelemetry server initialized. Listening on port : " + input_port + "\n");
 };
 
 
