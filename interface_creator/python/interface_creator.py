@@ -48,12 +48,13 @@ class InterfaceCreatorGUI():
 
         # File list
         col_files_list = [
+            [sg.Button('New', key='-NEW_BTN-', size=(8, 1), button_color="green"), sg.FileBrowse(enable_events=True, size=(8, 1), button_color="green", key="-BROWSE-", target="-BROWSE-", file_types=(("TXT Files", "*.txt"),) )],
             [sg.Text('File 1 of {}'.format(len(self.file_paths)), key='-FILENUM-')],
             [sg.Listbox(values=self.filenames_only, size=(30, 30), key='-LISTBOX-', enable_events=True)],
-            [sg.Button('Use this', key='-GEN_BTN-', size=(8, 1), disabled=True, button_color="green")],
         ]
         # Content of file
         col_file_content = [
+            [sg.Button('Use this', key='-USE_THIS_BTN-', size=(8, 1), disabled=True, button_color="green")],
             [sg.Text("Select something", key='-FILENAME-')],
             [sg.Multiline("", size=(80, 32), key='-MULTILINE-')],
         ]
@@ -93,8 +94,14 @@ class InterfaceCreatorGUI():
                 filepath = os.path.join(self.interfaces_folder, values['-LISTBOX-'][0])
                 filenum = self.file_paths.index(filepath)
                 self.update_selected_filename(filenum, filepath)
-            elif event == '-GEN_BTN-':
+            elif event == '-USE_THIS_BTN-':
                 self.popup_generate(self.window['-MULTILINE-'].get())
+            elif event == '-NEW_BTN-':
+                self.popup_generate("")
+            elif event == '-BROWSE-':
+                with open(filepath, "rt", encoding='utf-8') as f:
+                    text = f.read()
+                self.popup_generate(text)
             elif event == 'Update Port':
                 port = self.window["-PORT_INPUT-"].get()
                 self.set_port_to_file(port)
@@ -148,13 +155,31 @@ class InterfaceCreatorGUI():
         except Exception as e:
             print("Error: ", e)
 
-        self.window['-GEN_BTN-'].update(disabled=False)
+        self.window['-USE_THIS_BTN-'].update(disabled=False)
 
     def popup_generate(self, text):
         text = text.rstrip("\n") # Remove newline at the end (they appear in some versions of python/PySimpleGUI)
         layout = [
             [sg.Multiline(text, size=(80, 32), key='-FINAL_CONTENT-'),],
             [sg.Button("Write", button_color="green")],
+        ]
+        win = sg.Window("Generate", layout, modal=True, finalize=True)
+
+        while True:
+            event, values = win.read()
+            if event == sg.WINDOW_CLOSED:
+                break
+            elif event == 'Write':
+                final_text = win['-FINAL_CONTENT-'].get()
+                # send text to generate_telemetry_json
+                json_creator = JSON_Creator()
+                json_creator.generate_json_from_lines(final_text)
+                break
+        win.close()
+    
+    def popup_browse(self):
+        layout = [
+            [],
         ]
         win = sg.Window("Generate", layout, modal=True, finalize=True)
 
