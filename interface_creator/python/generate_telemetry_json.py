@@ -5,8 +5,19 @@ import json
 class JSON_Creator():
     def __init__(self):
         # Constant output file
-        self.out_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
+        self.interface_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
+        self.port_file = os.path.join("..", "..", "telemetry_server", "port_config.txt")
+
+        # Check existence of port config file
+        if not os.path.exists(self.interface_file):
+            print(f'Interface file does not exist!: {self.interface_file}')
+            return
     
+        # Check existence of port config file
+        if not os.path.exists(self.port_file):
+            print(f'Port config file does not exist!: {self.port_file}')
+            return
+        
     def geberate_json_from_path(self, fullpath):
         with open(fullpath) as in_f:
             in_lines = in_f.read()
@@ -17,9 +28,9 @@ class JSON_Creator():
             
             in_lines = in_lines.splitlines() # Split the lines with \n
 
-            print(f"Writing resuls to json: {self.out_file}")
+            print(f"Writing resuls to json: {self.interface_file}")
             
-            with open(self.out_file, "w") as out_f:
+            with open(self.interface_file, "w") as out_f:
 
                 self.write_lines_to_json(in_lines, out_f)
             
@@ -95,6 +106,17 @@ class JSON_Creator():
 
         out_f.write(json_object)
 
+    def get_port_from_file(self):
+        with open(self.port_file, "rt", encoding='utf-8') as f:
+            port_input = f.read()
+            port_input = str(int(port_input))
+        return port_input
+
+    def set_port_to_file(self, port):
+        with open(self.port_file, "wt", encoding='utf-8') as f:
+            print(f"Setting port to {port}")
+            f.write(port)
+
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         # Replace spaces in field names (for the json)
         field_name = field_name.replace(" ", "_")
@@ -140,8 +162,19 @@ class JSON_Creator():
 
 
 if __name__ == "__main__":
+    json_creator = JSON_Creator()
+
+    # Set port
+    current_port = json_creator.get_port_from_file()
+    choice_port = input(f"Listening to telemetry on port {current_port}. Change port? [y/N]")
+
+    if choice_port in ["y", "Y"]:
+        new_port = input("Enter port\n")
+        json_creator.set_port_to_file(new_port)
+
+    # Set interface
     interfaces_folder = os.path.join(".", "examples")
-    fullpaths, filenames = JSON_Creator.get_files_from_folder(interfaces_folder)
+    fullpaths, filenames = JSON_Creator.get_files_from_folder(interfaces_folder)    
     print("Available files:")
     for num, filename, fullpath in zip(enumerate(filenames), filenames, fullpaths):
         print(f"{num[0]:>4} : {filename}")
