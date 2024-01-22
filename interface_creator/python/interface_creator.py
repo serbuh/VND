@@ -96,7 +96,8 @@ class InterfaceCreatorGUI():
             elif event == '-NEW_BTN-':
                 self.popup_generate("")
             elif event == '-BROWSE-':
-                with open(filepath, "rt", encoding='utf-8') as f:
+                browse_filepath = values['-BROWSE-']
+                with open(browse_filepath, "rt", encoding='utf-8') as f:
                     text = f.read()
                 self.popup_generate(text)
             elif event == 'Update Port':
