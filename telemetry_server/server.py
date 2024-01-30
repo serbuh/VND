@@ -5,7 +5,7 @@ from flask_socketio import SocketIO,send,emit
 
 # from config import *
 
-app = Flask(__name__,static_url_path='', static_folder='../openmct/dist', template_folder='templates')
+app = Flask(__name__, static_url_path='', static_folder='../openmct/dist', template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -125,7 +125,7 @@ class UDP_Listener():
         address = ("127.0.0.1", 50020)
         self.udp_dashboard_sock.bind(address)
 
-        print(f"Started to listen on {address}")
+        print(f"Listening telemetry on {address[0]}:{address[1]}")
 
         while self.listen:
             data, _ = self.udp_dashboard_sock.recvfrom(65535) # Blocking. Should be in thread
@@ -178,8 +178,11 @@ if __name__ == '__main__':
     # receiver.add_udp_data_listener(handle_udp_data_message)
     
     threading.Thread(target=receiver.start_data_listening, daemon=True).start()
+    
+    browser_port = 3000
+    print(f"Running on http://localhost:{browser_port}/index.html")
 
-    socketio.run(app, debug=True, use_reloader=False, port=3000)
+    socketio.run(app, debug=True, use_reloader=False, port=browser_port)
 
 
     
