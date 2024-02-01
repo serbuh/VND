@@ -5,7 +5,7 @@ import json
 import datetime
 import threading
 
-app = Flask(__name__, static_url_path='', static_folder='../openmct', template_folder='templates')
+app = Flask(__name__, static_url_path='', static_folder='../openmct/dist', template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -16,37 +16,26 @@ historic_data_max_size = 1000
 
 @socketio.on("subscribe")
 def handle_subscribe(key):
-    print(f"Subscribe to {key}")
+    print(f"Subscribe req: {key}")
     subscribed_keys[key] = True
 
 @socketio.on("unsubscribe")
 def handle_unsubscribe(key):
-    print(f"Unsubscribe from {key}")
-    del subscribed_keys[key]
+    print(f"Unsubscribe req: {key}")
+    subscribed_keys.pop(key, None)
 
-
-def get_historic_data(requested_key, from_timestamp, to_timestamp):
-    out = []
-
-    for msg_dict in historic_data:
-        if msg_dict["timestamp"] > from_timestamp and msg_dict["timestamp"] < to_timestamp:
-            current_object = {}
-            for key, value in msg_dict.items():
-                if key == requested_key:
-                    current_object[key] = value
-            if current_object:
-                current_object["timestamp"] = msg_dict["timestamp"]
-                out.append(current_object)
-
-    return out
-
-@app.route('/CVASHistory/<key>') 
-def handle_historic_data(key):
-    start = request.args.start
-    end = request.args.end
-    data = get_historic_data(key,float(start),float(end))
-    
-    return data
+@app.route('/history/<key>/<start>/<end>/<strategy>/<size>')
+def handle_historic_data(key, start, end, strategy, size):
+    historic_blob = []
+    for msg_batch in historic_data:
+        if msg_batch["timestamp"] > float(start) and msg_batch["timestamp"] < float(end):
+            for stored_key, value in msg_batch.items(): # Extract the item
+                if stored_key == key: # Find needed key
+                    historic_msg = {"id": stored_key, "value": value, "timestamp": msg_batch["timestamp"], "mctLimitState":None}
+                    # print(f"One of the historic msgs: {historic_msg}")
+                    historic_blob.append(historic_msg)
+    print(f"Return {len(historic_blob)} historical items")
+    return historic_blob
 
 class TelemetryServer():
     def __init__(self):
@@ -70,41 +59,37 @@ class TelemetryServer():
         print(f"Listening telemetry on {address_listen_to[0]}:{address_listen_to[1]}")
 
         while self.listen:
+
             data, _ = self.udp_dashboard_sock.recvfrom(65535) # Blocking. Should be in thread
-            
             timestamp = datetime.datetime.now().timestamp() * 1000
 
-            # Get and save the msg with timestamp
-            msg_dict = json.loads(data.decode())
+            # New telemetry message
+            msg_batch = json.loads(data.decode())
+            #print(msg_batch, flush=True)
+
+            # Send message to OpenMCT
+            with app.app_context():
+                msgs_to_emit = []
+                
+                # Fetch messages that the openmct is subscribed for
+                for msg_key, msg_value in msg_batch.items():
+                    if subscribed_keys.get(msg_key):
+                        msgs_to_emit.append({"key": msg_key, "value": msg_value})
+
+                # Print emit realtime message
+                if msgs_to_emit:
+                    # print("d",end="",flush=True)
+                    print(f"Send realtime msgs: {msgs_to_emit}")
+                    socketio.emit("realtime", msgs_to_emit)
             
-            # Print incoming messages
-            #print(msg_dict, flush=True)
-            
-            msg_dict["timestamp"] = timestamp
-            historic_data.append(msg_dict)
+            # Save history
+            msg_batch["timestamp"] = timestamp # append timestamp
+            historic_data.append(msg_batch) # [{"field_1": 1, "field_2": 2, "timestamp":timestamp}, {...}, ...]
             
             # Cyclic buffer like
             if len(historic_data) > historic_data_max_size:
                 historic_data.pop(0)
-            
-            # Build message to send to OpenMCT
-            realtime_msg_to_send = []
-            for key, value in msg_dict.items():
-                # Get all subscribed elemnts 
-                if key in subscribed_keys.keys():
-                    realtime_msg_to_send.append({"key": key, "value": value, "timestamp": timestamp})
 
-            # Send message to OpenMCT
-            with app.app_context():
-                print("d",end="",flush=True)
-                socketio.emit("realtime", realtime_msg_to_send)
-
-            # TODO Bundling
-            # if counter >= realtime_message_list_size:
-            #     for _,handler in self.realtime_listeners.items():
-            #         handler(message_buffer,self)
-            #         message_buffer = []
-            #         counter = 0
         
 
 if __name__ == '__main__':
