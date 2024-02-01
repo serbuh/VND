@@ -8,7 +8,7 @@ import threading
 app = Flask(__name__, static_url_path='', static_folder='../openmct/dist', template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode="threading")
 
 historic_data = []
 subscribed_keys = {}
@@ -47,7 +47,7 @@ class TelemetryServer():
     
     def run_flask(self, browser_port):
         print(f"Running on http://localhost:{browser_port}/index.html")
-        socketio.run(app, debug=True, use_reloader=False, port=browser_port)
+        socketio.run(app, debug=False, use_reloader=False, port=browser_port)
 
     def start_data_listening_thread(self, address_listen_to):
         # Start listening for telemetry
@@ -74,13 +74,14 @@ class TelemetryServer():
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
                     if subscribed_keys.get(msg_key):
-                        msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
+                        socketio.emit("realtime", [{"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None}])
+                        #msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
 
                 # Print emit realtime message
-                if msgs_to_emit:
-                    # print("d",end="",flush=True)
-                    # print(f"Send realtime msgs: {msgs_to_emit}")
-                    socketio.emit("realtime", msgs_to_emit)
+                # if msgs_to_emit:
+                #     # print("d",end="",flush=True)
+                #     # print(f"Send realtime msgs: {msgs_to_emit}")
+                #     socketio.emit("realtime", msgs_to_emit)
             
             # Save history
             msg_batch["timestamp"] = timestamp # append timestamp
