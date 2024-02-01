@@ -94,7 +94,9 @@ class TelemetryServer():
 
 if __name__ == '__main__':
     # Params
-    address_listen_to = ("127.0.0.1", 50020)
+    with open("port_config.txt") as f:
+        port = int(f.read())
+    address_listen_to = ("127.0.0.1", port)
     browser_port = 3000
 
     # Start Telemetry listener
