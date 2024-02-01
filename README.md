@@ -46,9 +46,27 @@ If you got distributed version of VND for StandAlone machines - this step is alr
 
 To install modules from internet:
 ```
-cd telemetry_server && npm install
-cd ..
 cd openmct && npm install
+```
+
+To create new deployment version (DEV):
+```
+npm run build:dev
+```
+NOTE: In `openmct/.webpack/webpack.dev.js` change   
+`__OPENMCT_ROOT_RELATIVE__: '"dist/"'`   
+to   
+`__OPENMCT_ROOT_RELATIVE__: '""'`
+
+To create new deployment version (Production):
+```
+npm run build:prod
+```
+
+# Telemetry producer example
+```
+cd sender_simulator
+python sender_simulator.py
 ```
 
 # Define messages interface and port
@@ -110,11 +128,6 @@ cd telemetry_server && npm start
 localhost:8080
 ```
 
-# Telemetry sender example
-To send some telemetry to VND start:
-```
-[linux] python dashboard_sim_sender.py
-```
 
 # Docker cheetsheet for deploy
 
