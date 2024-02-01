@@ -5,7 +5,7 @@ import json
 import datetime
 import threading
 
-app = Flask(__name__, static_url_path='', static_folder='../openmct/dist', template_folder='templates')
+app = Flask(__name__, static_url_path='', static_folder='../openmct', template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -88,20 +88,16 @@ class TelemetryServer():
                 historic_data.pop(0)
             
             # Build message to send to OpenMCT
-            realtime_msg_to_send = {}
+            realtime_msg_to_send = []
             for key, value in msg_dict.items():
                 # Get all subscribed elemnts 
                 if key in subscribed_keys.keys():
-                    realtime_msg_to_send[key] = value
-                
-            # If anything to show
-            if realtime_msg_to_send:
-                realtime_msg_to_send["timestamp"] = timestamp
+                    realtime_msg_to_send.append({"key": key, "value": value, "timestamp": timestamp})
 
-                # Send message to OpenMCT
-                with app.app_context():
-                    print("d",end="",flush=True)
-                    socketio.emit("realtime", realtime_msg_to_send)
+            # Send message to OpenMCT
+            with app.app_context():
+                print("d",end="",flush=True)
+                socketio.emit("realtime", realtime_msg_to_send)
 
             # TODO Bundling
             # if counter >= realtime_message_list_size:
