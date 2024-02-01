@@ -34,7 +34,7 @@ def handle_historic_data(key, start, end, strategy, size):
                     historic_msg = {"id": stored_key, "value": value, "timestamp": msg_batch["timestamp"], "mctLimitState":None}
                     # print(f"One of the historic msgs: {historic_msg}")
                     historic_blob.append(historic_msg)
-    print(f"Return {len(historic_blob)} historical items")
+    print(f"Send {len(historic_blob)} history items for {key}")
     return historic_blob
 
 class TelemetryServer():
@@ -74,7 +74,7 @@ class TelemetryServer():
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
                     if subscribed_keys.get(msg_key):
-                        msgs_to_emit.append({"key": msg_key, "value": msg_value})
+                        msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
 
                 # Print emit realtime message
                 if msgs_to_emit:
