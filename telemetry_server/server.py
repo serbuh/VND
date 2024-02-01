@@ -79,7 +79,7 @@ class TelemetryServer():
                 # Print emit realtime message
                 if msgs_to_emit:
                     # print("d",end="",flush=True)
-                    print(f"Send realtime msgs: {msgs_to_emit}")
+                    # print(f"Send realtime msgs: {msgs_to_emit}")
                     socketio.emit("realtime", msgs_to_emit)
             
             # Save history
