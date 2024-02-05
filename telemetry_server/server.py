@@ -4,8 +4,12 @@ import socket
 import json
 import datetime
 import threading
+import os
 
-app = Flask(__name__, static_url_path='', static_folder='../openmct/dist', template_folder='templates')
+script_folder = os.path.dirname(os.path.abspath(__file__))
+
+openmct_dist = os.path.join(script_folder, "..", "openmct", "dist")
+app = Flask(__name__, static_url_path='', static_folder=openmct_dist, template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode="threading")
@@ -99,7 +103,7 @@ class TelemetryServer():
 
 if __name__ == '__main__':
     # Params
-    with open("port_config.txt") as f:
+    with open(os.path.join(script_folder, "port_config.txt")) as f:
         port = int(f.read())
     address_listen_to = ("127.0.0.1", port)
     browser_port = 3000

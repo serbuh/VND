@@ -3,10 +3,10 @@ import os
 import json
 
 class JSON_Creator():
-    def __init__(self):
+    def __init__(self, interface_file, port_file):
         # Constant output file
-        self.interface_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
-        self.port_file = os.path.join("..", "..", "telemetry_server", "port_config.txt")
+        self.interface_file = interface_file
+        self.port_file = port_file
 
         # Check existence of port config file
         if not os.path.exists(self.interface_file):
@@ -162,8 +162,10 @@ class JSON_Creator():
 
 
 if __name__ == "__main__":
-    json_creator = JSON_Creator()
-
+    interface_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
+    port_file = os.path.join("..", "..", "telemetry_server", "port_config.txt")
+    json_creator = JSON_Creator(interface_file, port_file)
+    
     # Set port
     current_port = json_creator.get_port_from_file()
     choice_port = input(f"Listening to telemetry on port {current_port}. Change port? [y/N]")
@@ -196,5 +198,5 @@ if __name__ == "__main__":
     print(f"Reading fields from {filename}")
 
     # Create json
-    json_creator = JSON_Creator()
+    json_creator = JSON_Creator(interface_file, port_file)
     json_creator.geberate_json_from_path(fullpath)

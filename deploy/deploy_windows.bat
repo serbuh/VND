@@ -1,27 +1,31 @@
 @ECHO OFF
-cd ..
-set /p Version=<deploy/version.txt
+
+set /p Version=<../deploy/version.txt
 echo Preparing version %Version%
 
 :start
-SET choice=
-SET /p choice=Create exe for interface_creator [Y]: 
+Echo [1] VND
+ECHO [2] pip requirements
+SET /p choice=
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
-IF '%choice%'=='Y' GOTO create_interface_creator_exe
-IF '%choice%'=='y' GOTO create_interface_creator_exe
-IF '%choice%'=='N' GOTO continue
-IF '%choice%'=='n' GOTO continue
-IF '%choice%'=='' GOTO create_interface_creator_exe
+IF '%choice%'=='1' GOTO prepare_VND
+IF '%choice%'=='2' GOTO prepare_pip_requirements
 ECHO "%choice%" is not valid
 ECHO.
 GOTO start
 
-:create_interface_creator_exe
-echo Build interface_creator.exe
-cd interface_creator/python && python setup.py build
-cd ../..
+:prepare_pip_requirements
+set req_folder=..\downloaded_req
+echo remove all previous wheels
+del /q "%req_folder%\*.*"
+echo Downloading wheels
+pip download -r ..\requirements.txt -d %req_folder%
+cd ..
+exit \b 2
 
-:continue
+:prepare_VND
+cd ..
 echo Packing VND_v%Version%.zip
-7z a -tzip ../VND_v%Version%.zip -xr!env ../VND
-rem 7z a -sfx7z.sfx ../VND_v%Version%.exe -xr!.git -xr!deploy.bat -xr!env ../VND
+7z a -tzip ..\VND_v%Version%.zip -xr!env ..\VND
+rem 7z a -sfx7z.sfx ..\VND_v%Version%.exe -xr!.git -xr!deploy.bat -xr!env ..\VND
+exit \b 2

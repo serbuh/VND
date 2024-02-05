@@ -8,4 +8,4 @@ IF NOT EXIST env\Scripts\python.exe (
     echo Using virtual env: env
 )
 
-env\Scripts\python.exe telemetry_server\server.py
+env\Scripts\python.exe sender_simulator\sender_simulator.py

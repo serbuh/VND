@@ -1,5 +1,7 @@
-#!/usr/bin/env python
 import os
+script_folder = os.path.dirname(os.path.abspath(__file__))
+
+
 try:
     import PySimpleGUI as sg
 except:
@@ -13,15 +15,16 @@ from generate_telemetry_json import JSON_Creator
 class InterfaceCreatorGUI():
     def __init__(self):
         # Get the interfaces files folder
-        self.interfaces_folder = os.path.join(".", "examples")
-        
-        # Check existence of interfaces folder
+        self.interfaces_folder = os.path.join(script_folder, "examples")
+        interface_file = os.path.join(script_folder, "..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
+        port_file = os.path.join(script_folder, "..", "..", "telemetry_server", "port_config.txt")
+		# Check existence of interfaces folder
         if not os.path.exists(self.interfaces_folder):
             sg.popup_cancel(f'Folder does not exist!: {self.interfaces_folder}')
             return
         
         # Object that works with files (interface, ports)
-        self.json_creator = JSON_Creator()
+        self.json_creator = JSON_Creator(interface_file, port_file)
 
         # Get list of interface examples
         self.file_paths, self.filenames_only = JSON_Creator.get_files_from_folder(self.interfaces_folder)
