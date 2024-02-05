@@ -30,3 +30,4 @@ GOTO check_virtualenv
 echo Installing wheels ...
 for %%x in (downloaded_req/*.whl) do env\Scripts\python -m pip install --retries 0 downloaded_req\\"%%x"
 echo Finished. Check if no errors. Otherwise run this script again until errors disapear
+pause

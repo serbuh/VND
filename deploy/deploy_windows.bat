@@ -5,7 +5,7 @@ echo Preparing version %Version%
 
 :start
 Echo [1] VND
-ECHO [2] pip requirements
+ECHO [2] Prepare pip requirements
 SET /p choice=
 IF NOT '%choice%'=='' SET choice=%choice:~0,1%
 IF '%choice%'=='1' GOTO prepare_VND
@@ -20,7 +20,7 @@ echo remove all previous wheels
 del /q "%req_folder%\*.*"
 echo Downloading wheels
 pip download -r ..\requirements.txt -d %req_folder%
-cd ..
+echo Copy install script
 exit \b 2
 
 :prepare_VND
