@@ -1,1 +1,1 @@
-env/Scripts/python sender_simulator.py
+env/bin/python sender_simulator/sender_simulator.py

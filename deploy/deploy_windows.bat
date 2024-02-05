@@ -20,7 +20,6 @@ echo remove all previous wheels
 del /q "%req_folder%\*.*"
 echo Downloading wheels
 pip download -r ..\requirements.txt -d %req_folder%
-echo Copy install script
 exit \b 2
 
 :prepare_VND
