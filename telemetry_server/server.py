@@ -24,6 +24,10 @@ def handle_unsubscribe(key):
     print(f"Unsubscribe req: {key}")
     subscribed_keys.pop(key, None)
 
+@app.route('/')
+def static_file():
+    return app.send_static_file('index.html')
+
 @app.route('/history/<key>/<start>/<end>/<strategy>/<size>')
 def handle_historic_data(key, start, end, strategy, size):
     historic_blob = []
