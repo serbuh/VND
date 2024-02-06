@@ -109,7 +109,7 @@ if __name__ == '__main__':
     # Params
     with open(os.path.join(script_folder, "port_config.txt")) as f:
         port = int(f.read())
-    address_listen_to = ("127.0.0.1", port)
+    address_listen_to = ("0.0.0.0", port)
     browser_port = 3000
 
     # Start Telemetry listener
