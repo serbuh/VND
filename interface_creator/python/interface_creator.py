@@ -33,30 +33,42 @@ class InterfaceCreatorGUI():
             sg.popup(f'No config files in folder {self.interfaces_folder}')
             return
 
-        port_input = self.json_creator.get_port_from_file()
+        browser_port, listen_to_ip, listen_to_port = self.json_creator.get_port_from_file()
 
         # Menu layout
         menu_content = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
         menu = sg.Menu(menu_content)
 
         # Select port
-        row_port_selection = [
-            sg.Input(port_input, enable_events=True, key='-PORT_INPUT-', justification='left'),
-            sg.Button("Update Port")
-        ]
-        port_frame = sg.Frame("Port", [row_port_selection])
+        label_width = 18
+        config_layout = [[
+            sg.Text('Listening for telemetry on', size=(label_width, 1)),
+            sg.Input(listen_to_ip, enable_events=True, size=(15, 1), key='-listen_to_ip-', justification='left'),
+            sg.Text(':'),
+            sg.Input(listen_to_port, enable_events=True, size=(5, 1), key='-listen_to_port-', justification='left'),
+        ],
+        [
+            sg.Text('Browser port', size=(label_width, 1)),
+            sg.Input("localhost", enable_events=True, size=(15, 1), readonly=True, text_color="grey", justification='left'),
+            sg.Text(':'),
+            sg.Input(browser_port, enable_events=True, size=(5, 1), key='-browser_port-', justification='left'),
+        ],
+        [
+            sg.Button("Update"),
+        ]]
+        config_frame = sg.Frame("Server Config", config_layout)
 
         # File list
         col_files_list = [
             [sg.Button('New', key='-NEW_BTN-', size=(8, 1), button_color="green"), sg.FileBrowse(enable_events=True, size=(8, 1), button_color="green", key="-BROWSE-", target="-BROWSE-", file_types=(("TXT Files", "*.txt"),) )],
-            [sg.Text('File 1 of {}'.format(len(self.file_paths)), key='-FILENUM-')],
-            [sg.Listbox(values=self.filenames_only, size=(30, 30), key='-LISTBOX-', enable_events=True)],
+            [sg.Text(f'File 1 of {len(self.file_paths)}', key='-FILENUM-')],
+            [sg.Listbox(values=self.filenames_only, size=(30, 15), key='-LISTBOX-', enable_events=True)],
         ]
         # Content of file
         col_file_content = [
             [sg.Button('Use this', key='-USE_THIS_BTN-', size=(8, 1), disabled=True, button_color="green")],
             [sg.Text("Select something", key='-FILENAME-')],
-            [sg.Multiline("", size=(80, 32), key='-MULTILINE-')],
+            [sg.Multiline("", size=(80, 16), key='-MULTILINE-')],
         ]
         files_frame = sg.Frame("Select interface", [[sg.Col(col_files_list), sg.Col(col_file_content, vertical_alignment="top")]])
         
@@ -64,7 +76,7 @@ class InterfaceCreatorGUI():
         col_exit_content = [[sg.Button('Exit', size=(8, 1), button_color="red")]]
         col_exit = sg.Col(col_exit_content, justification="right")
 
-        layout = [[menu], [port_frame], [files_frame], [col_exit]]
+        layout = [[menu], [config_frame], [files_frame], [col_exit]]
 
         self.window = sg.Window('Config Generator', layout, return_keyboard_events=True, use_default_focus=False)
     
@@ -103,9 +115,11 @@ class InterfaceCreatorGUI():
                 with open(browse_filepath, "rt", encoding='utf-8') as f:
                     text = f.read()
                 self.popup_generate(text)
-            elif event == 'Update Port':
-                port = self.window["-PORT_INPUT-"].get()
-                self.json_creator.set_port_to_file(port)
+            elif event == 'Update':
+                browser_port = self.window["-browser_port-"].get()
+                listen_to_ip = self.window["-listen_to_ip-"].get()
+                listen_to_port = self.window["-listen_to_port-"].get()
+                self.json_creator.set_port_to_file(browser_port, listen_to_ip, listen_to_port)
             elif event == 'Exit':
                 break
             # ----------------- Menu choices -----------------

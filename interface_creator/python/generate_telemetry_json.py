@@ -110,14 +110,21 @@ class JSON_Creator():
     def get_port_from_file(self):
         config = configparser.ConfigParser()
         config.read(self.server_config)
+        browser_port = str(config['Comm']['browser_port'])
+        listen_to_ip = str(config['Comm']['listen_to_ip'])
         listen_to_port = str(config['Comm']['listen_to_port'])
-        return listen_to_port
+        print(f"Listening for telemetry on   {listen_to_ip}:{listen_to_port}")
+        print(f"Browser address:   localhost:{browser_port}")
+        return browser_port, listen_to_ip, listen_to_port
 
-    def set_port_to_file(self, port):
-        print(f"Setting port to {port}")
+    def set_port_to_file(self, browser_port, listen_to_ip, listen_to_port):
+        print(f"Listening for telemetry on   {listen_to_ip}:{listen_to_port}")
+        print(f"Browser address:   localhost:{browser_port}")
         config = configparser.ConfigParser()
         config.read(self.server_config)
-        config['Comm']['listen_to_port'] = port
+        config['Comm']['browser_port'] = browser_port
+        config['Comm']['listen_to_ip'] = listen_to_ip
+        config['Comm']['listen_to_port'] = listen_to_port
         
         with open(self.server_config, "wt", encoding='utf-8') as f:
             config.write(f)
@@ -172,12 +179,15 @@ if __name__ == "__main__":
     json_creator = JSON_Creator(interface_file, server_config)
     
     # Set port
-    current_port = json_creator.get_port_from_file()
-    choice_port = input(f"Listening to telemetry on port {current_port}. Change port? [y/N]")
+    browser_port, listen_to_ip, listen_to_port = json_creator.get_port_from_file()
+    choice_port = input(f"Listening to telemetry on port {browser_port}. Change port? [y/N]")
 
     if choice_port in ["y", "Y"]:
-        new_port = input("Enter port\n")
-        json_creator.set_port_to_file(new_port)
+        browser_port = input("Browser port:\n")
+        listen_to_ip = input("Telemetry ip:\n")
+        listen_to_port = input("Telemetry port:\n")
+
+        json_creator.set_port_to_file(browser_port, listen_to_ip, listen_to_port)
 
     # Set interface
     interfaces_folder = os.path.join(".", "examples")
