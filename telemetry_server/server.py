@@ -39,6 +39,8 @@ def handle_historic_data(key, start, end, strategy, size):
         if msg_batch["timestamp"] > float(start) and msg_batch["timestamp"] < float(end):
             for stored_key, value in msg_batch.items(): # Extract the item
                 if stored_key == key: # Find needed key
+                    if isinstance(value, list): # Handle tuples in historic. Take only the first value
+                        value = value[0]
                     historic_msg = {"id": stored_key, "value": value, "timestamp": msg_batch["timestamp"], "mctLimitState":None}
                     # print(f"One of the historic msgs: {historic_msg}")
                     historic_blob.append(historic_msg)
@@ -82,6 +84,8 @@ class TelemetryServer():
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
                     if subscribed_keys.get(msg_key):
+                        if isinstance(value, list): # Handle tuples in realtime. Take only the first value
+                            value = value[0]
                         socketio.emit("realtime", [{"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None}])
                         #msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
 
