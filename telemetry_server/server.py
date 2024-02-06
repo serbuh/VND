@@ -107,10 +107,14 @@ class TelemetryServer():
 
 if __name__ == '__main__':
     # Params
-    with open(os.path.join(script_folder, "port_config.txt")) as f:
-        port = int(f.read())
-    address_listen_to = ("0.0.0.0", port)
-    browser_port = 3000
+    import configparser
+    config = configparser.ConfigParser()
+    config.read(os.path.join(script_folder, "server_config.ini"))
+
+    browser_port = int(config['Comm']['browser_port'])
+    listen_to_ip = config['Comm']['listen_to_ip']
+    listen_to_port = int(config['Comm']['listen_to_port'])
+    address_listen_to = (listen_to_ip, listen_to_port)
 
     # Start Telemetry listener
     telemetry_server = TelemetryServer()

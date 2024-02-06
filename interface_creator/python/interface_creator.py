@@ -17,7 +17,7 @@ class InterfaceCreatorGUI():
         # Get the interfaces files folder
         self.interfaces_folder = os.path.join(script_folder, "examples")
         interface_file = os.path.join(script_folder, "..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
-        port_file = os.path.join(script_folder, "..", "..", "telemetry_server", "port_config.txt")
+        port_file = os.path.join(script_folder, "..", "..", "telemetry_server", "server_config.ini")
 		# Check existence of interfaces folder
         if not os.path.exists(self.interfaces_folder):
             sg.popup_cancel(f'Folder does not exist!: {self.interfaces_folder}')

@@ -1,12 +1,13 @@
 import typing
 import os
 import json
+import configparser
 
 class JSON_Creator():
-    def __init__(self, interface_file, port_file):
+    def __init__(self, interface_file, server_config):
         # Constant output file
         self.interface_file = interface_file
-        self.port_file = port_file
+        self.server_config = server_config
 
         # Check existence of port config file
         if not os.path.exists(self.interface_file):
@@ -14,8 +15,8 @@ class JSON_Creator():
             return
     
         # Check existence of port config file
-        if not os.path.exists(self.port_file):
-            print(f'Port config file does not exist!: {self.port_file}')
+        if not os.path.exists(self.server_config):
+            print(f'Port config file does not exist!: {self.server_config}')
             return
         
     def geberate_json_from_path(self, fullpath):
@@ -107,15 +108,19 @@ class JSON_Creator():
         out_f.write(json_object)
 
     def get_port_from_file(self):
-        with open(self.port_file, "rt", encoding='utf-8') as f:
-            port_input = f.read()
-            port_input = str(int(port_input))
-        return port_input
+        config = configparser.ConfigParser()
+        config.read(self.server_config)
+        listen_to_port = str(config['Comm']['listen_to_port'])
+        return listen_to_port
 
     def set_port_to_file(self, port):
-        with open(self.port_file, "wt", encoding='utf-8') as f:
-            print(f"Setting port to {port}")
-            f.write(port)
+        print(f"Setting port to {port}")
+        config = configparser.ConfigParser()
+        config.read(self.server_config)
+        config['Comm']['listen_to_port'] = port
+        
+        with open(self.server_config, "wt", encoding='utf-8') as f:
+            config.write(f)
 
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         # Replace spaces in field names (for the json)
@@ -163,8 +168,8 @@ class JSON_Creator():
 
 if __name__ == "__main__":
     interface_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")
-    port_file = os.path.join("..", "..", "telemetry_server", "port_config.txt")
-    json_creator = JSON_Creator(interface_file, port_file)
+    server_config = os.path.join("..", "..", "telemetry_server", "server_config.ini")
+    json_creator = JSON_Creator(interface_file, server_config)
     
     # Set port
     current_port = json_creator.get_port_from_file()
@@ -198,5 +203,5 @@ if __name__ == "__main__":
     print(f"Reading fields from {filename}")
 
     # Create json
-    json_creator = JSON_Creator(interface_file, port_file)
+    json_creator = JSON_Creator(interface_file, server_config)
     json_creator.geberate_json_from_path(fullpath)
