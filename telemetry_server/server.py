@@ -5,6 +5,9 @@ import json
 import datetime
 import threading
 import os
+from gevent import monkey
+
+monkey.patch_all()
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
 
@@ -12,7 +15,7 @@ openmct_dist = os.path.join(script_folder, "..", "openmct", "dist")
 app = Flask(__name__, static_url_path='', static_folder=openmct_dist, template_folder='templates')
 
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, async_mode="threading")
+socketio = SocketIO(app, async_mode="gevent")
 
 historic_data = []
 subscribed_keys = {}
