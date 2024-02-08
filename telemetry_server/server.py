@@ -84,8 +84,8 @@ class TelemetryServer():
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
                     if subscribed_keys.get(msg_key):
-                        if isinstance(value, list): # Handle tuples in realtime. Take only the first value
-                            value = value[0]
+                        if isinstance(msg_value, list): # Handle tuples in realtime. Take only the first value
+                            msg_value = msg_value[0]
                         socketio.emit("realtime", [{"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None}])
                         #msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
 
