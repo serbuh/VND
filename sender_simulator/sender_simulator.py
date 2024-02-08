@@ -16,7 +16,8 @@ class Dashboard():
         self.udp_dashboard_sock.sendto(msg_serialized, self.udp_dashboard_addr)
 
 # Create udp connection
-dashboard_channel = ("127.0.0.1", 50020)
+dashboard_channel = ("127.0.0.1", 5555)
+print(f"Sending to {dashboard_channel[0]}:{dashboard_channel[1]}")
 dashboard = Dashboard(dashboard_channel)
 
 #Create telemetry dictionary
@@ -76,7 +77,8 @@ while True:
     status_dict["Compass.azimuth2"]     = 360 - azimuth
 
     # Sending dict
-    print("Sending {}".format(status_dict))
+    # print(f"Sending {status_dict}\r")
+    print(f"Sending {counter}", end="\r")
     dashboard.Send(status_dict)
     
     time.sleep(1/30.0)
