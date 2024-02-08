@@ -131,11 +131,11 @@ class JSON_Creator():
 
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         # Replace spaces in field names (for the json)
-        field_name = field_name.replace(" ", "_")
-        
+        field_key = field_name.replace(" ", "_")
+        field_name = field_key.rsplit(".", 1)[-1] # Take only the last part of the string that is separated by dot
         measurement = {
             "name": field_name,
-            "key": field_name,
+            "key": field_key,
             "values": [
                 {
                     "key": "value",
@@ -165,9 +165,9 @@ class JSON_Creator():
                 measurement["values"][0]['enumerations'].append(enum_value_dict)
                 enum_values_str += f" {e_val[0]}:{e_val[1]} "
 
-            print(f"{open_mct_type}: {field_name} ({enum_values_str})")
+            print(f"{open_mct_type}: {field_key} ({enum_values_str})")
         else:
-            print(f"{open_mct_type}: {field_name}")
+            print(f"{open_mct_type}: {field_key}")
         
         return measurement
 
