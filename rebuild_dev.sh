@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "Rebuilding openmct (DEV)"
-cd ../openmct && npm run build:dev
+cd openmct && npm run build:dev
