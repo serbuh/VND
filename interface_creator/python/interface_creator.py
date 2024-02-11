@@ -176,7 +176,7 @@ class InterfaceCreatorGUI():
             elif event == 'Write':
                 final_text = win['-FINAL_CONTENT-'].get()
                 # send text to generate_telemetry_json
-                self.json_creator.generate_json_from_lines(final_text)
+                success = self.json_creator.generate_json_from_lines(final_text)
                 break
         win.close()
     
@@ -193,7 +193,7 @@ class InterfaceCreatorGUI():
             elif event == 'Write':
                 final_text = win['-FINAL_CONTENT-'].get()
                 # send text to generate_telemetry_json
-                self.json_creator.generate_json_from_lines(final_text)
+                success = self.json_creator.generate_json_from_lines(final_text)
                 break
         win.close()
 

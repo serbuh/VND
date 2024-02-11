@@ -1,3 +1,4 @@
+Ver:2024_02_11
 Status.Counter
 S:Status.State
 E:Status.StateEnum {BAD:0, NORMAL:1, GOOD:2}

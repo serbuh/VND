@@ -1,3 +1,4 @@
+Ver:2024_02_11
 Status.State
 Status.Uptime
 Status.IR_FPS

@@ -1,3 +1,4 @@
+Ver:2024_02_11
 S:State.Scouting_accuracy
 S:State.Mapping_infra_status
 S:State.Aggregate_state

@@ -9,6 +9,11 @@ class JSON_Creator():
         self.interface_file = interface_file
         self.server_config = server_config
 
+        # Prefixes definition
+        self.string_prefix = "S:"
+        self.enum_prefix = "E:"
+        self.version_prefix = "Ver:"
+
         # Check existence of port config file
         if not os.path.exists(self.interface_file):
             print(f'Interface file does not exist!: {self.interface_file}')
@@ -19,13 +24,14 @@ class JSON_Creator():
             print(f'Port config file does not exist!: {self.server_config}')
             return
         
-    def geberate_json_from_path(self, fullpath):
+    def generate_json_from_path(self, fullpath) -> bool:
         with open(fullpath) as in_f:
             in_lines = in_f.read()
             
-            self.generate_json_from_lines(in_lines)
+            success = self.generate_json_from_lines(in_lines)
+            return success
     
-    def generate_json_from_lines(self, in_lines:str):            
+    def generate_json_from_lines(self, in_lines:str) -> bool:            
             
             in_lines = in_lines.splitlines() # Split the lines with \n
 
@@ -33,9 +39,24 @@ class JSON_Creator():
             
             with open(self.interface_file, "w") as out_f:
 
-                self.write_lines_to_json(in_lines, out_f)
+                update_interface_result = self.write_lines_to_json(in_lines, out_f)
+
+            if not update_interface_result:
+                print("Failed to update interface")
+                return update_interface_result
             
-            print("FINISHED")
+            print("Interface updated successfully")
+                
+            # Read version
+            with open(self.interface_file, "r") as json_f:
+                resulting_json = json.load(json_f)
+                ver = resulting_json.get("version", None)
+                if ver is None:
+                    print(f"Interface version is not specified. Use '{self.version_prefix}' to specify version")
+                else:
+                    print(f"Interface version: {ver}")
+
+            return update_interface_result
 
     @staticmethod
     def get_files_from_folder(interfaces_folder):
@@ -46,8 +67,8 @@ class JSON_Creator():
         filenames = [f for f in os.listdir(interfaces_folder) if f.lower().endswith('.txt')]
         return fullpaths, filenames
 
-    def _enum_parse(self, line, enum_prefix):
-        field_name = line[len(enum_prefix):] # Cut off prefix
+    def _enum_parse(self, line):
+        field_name = line[len(self.enum_prefix):] # Cut off prefix
         rpart = field_name.rpartition("{")
         field_name = rpart[0] # take name before enum values ( "{...}" )
         field_name = field_name.strip(" ") # Cut off whitespaces before and after field_name
@@ -70,17 +91,14 @@ class JSON_Creator():
 
         return field_name, enum_values
 
-    def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> None:
+    def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> bool:
         
         dictionary = {
             "name": "PredefinedTelemetry",
             "key": "pl",
+            "version": None,
             "measurements": []
         }
-
-        # Prefixes definition
-        string_prefix = "S:"
-        enum_prefix = "E:"
         
         # Iterate over each field name
         print("Fields:")
@@ -89,13 +107,24 @@ class JSON_Creator():
             line = line.strip("\n")
 
             # Handle types
-            if line.startswith(string_prefix): # String
-                field_name = line[len(string_prefix):] # Cut off prefix
+            if line.startswith(self.string_prefix): # String
+                field_name = line[len(self.string_prefix):] # Cut off prefix
                 measurement = self._generate_measurement(field_name, "string")
 
-            elif line.startswith(enum_prefix): # Enum
-                field_name, enum_values = self._enum_parse(line, enum_prefix)
+            elif line.startswith(self.enum_prefix): # Enum
+                field_name, enum_values = self._enum_parse(line)
                 measurement = self._generate_measurement(field_name, "enum", enum_values)
+
+            elif line.startswith(self.version_prefix): # Version
+                version = line[len(self.version_prefix):] # Cut off prefix
+                
+                if dictionary.get("version") is None:
+                    print(f"Interface version: {version}")
+                    dictionary["version"] = version
+                else:
+                    print(f"Version specified at least twice: {dictionary['version']}, {version}")
+                    return False
+                continue
 
             else: # Number
                 measurement = self._generate_measurement(line, "number")
@@ -106,6 +135,8 @@ class JSON_Creator():
         json_object = json.dumps(dictionary, indent=4)
 
         out_f.write(json_object)
+
+        return True
 
     def get_port_from_file(self):
         config = configparser.ConfigParser()
@@ -214,4 +245,4 @@ if __name__ == "__main__":
 
     # Create json
     json_creator = JSON_Creator(interface_file, server_config)
-    json_creator.geberate_json_from_path(fullpath)
+    success = json_creator.generate_json_from_path(fullpath)
