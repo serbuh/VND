@@ -80,23 +80,18 @@ class TelemetryServer():
             msg_batch = json.loads(data.decode())
             #print(msg_batch, flush=True)
 
-            # Send message to OpenMCT
+            # Emit realtime messages to OpenMCT
             with app.app_context():
-                msgs_to_emit = []
+                # Handle spaces (replace with "_")
+                msg_key = msg_key.replace(" ", "_")
                 
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
                     if subscribed_keys.get(msg_key):
-                        if isinstance(msg_value, list): # Handle tuples in realtime. Take only the first value
+                        # Handle tuples in realtime. Take only the first value
+                        if isinstance(msg_value, list):
                             msg_value = msg_value[0]
                         socketio.emit("realtime", [{"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None}])
-                        #msgs_to_emit.append({"id": msg_key, "value": msg_value, "timestamp":timestamp, "mctLimitState": None})
-
-                # Print emit realtime message
-                # if msgs_to_emit:
-                #     # print("d",end="",flush=True)
-                #     # print(f"Send realtime msgs: {msgs_to_emit}")
-                #     socketio.emit("realtime", msgs_to_emit)
             
             # Save history
             msg_batch["timestamp"] = timestamp # append timestamp
