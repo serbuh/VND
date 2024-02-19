@@ -82,11 +82,11 @@ class TelemetryServer():
 
             # Emit realtime messages to OpenMCT
             with app.app_context():
-                # Handle spaces (replace with "_")
-                msg_key = msg_key.replace(" ", "_")
-                
                 # Fetch messages that the openmct is subscribed for
                 for msg_key, msg_value in msg_batch.items():
+                    # Handle spaces (replace with "_")
+                    msg_key = msg_key.replace(" ", "_")
+
                     if subscribed_keys.get(msg_key):
                         # Handle tuples in realtime. Take only the first value
                         if isinstance(msg_value, list):
