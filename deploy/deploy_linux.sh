@@ -32,6 +32,7 @@ if [ "$prepare_VND" = true ]; then
     zip -r --filesync $zipname \
     $project_folder \
     --exclude "*/__pycache__/*" \
+   --exclude ".git/*" \
     --exclude "env/*"
 
     echo "Zipping finished. Resulting file:"

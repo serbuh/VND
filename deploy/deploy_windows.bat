@@ -25,6 +25,6 @@ exit \b 2
 :prepare_VND
 cd ..
 echo Packing VND_v%Version%.zip
-7z a -tzip ..\VND_v%Version%.zip -xr!env ..\VND
+7z a -tzip ..\VND_v%Version%.zip -xr!env -xr!.git ..\VND
 rem 7z a -sfx7z.sfx ..\VND_v%Version%.exe -xr!.git -xr!deploy.bat -xr!env ..\VND
 exit \b 2
