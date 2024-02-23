@@ -6,12 +6,14 @@ import datetime
 import threading
 import os
 from gevent import monkey
+import json
 
 monkey.patch_all()
 
 # Paths
 script_folder = os.path.dirname(os.path.abspath(__file__))
 openmct_dist = os.path.join(script_folder, "..", "openmct", "dist")
+openmct_interface_json_path = os.path.join(openmct_dist, "telemetry_plugin", "openmct_interface.json")
 
 
 class TelemetryServer():
@@ -26,6 +28,8 @@ class TelemetryServer():
         self.historic_data = []
         self.subscribed_keys = {}
         self.historic_data_max_size = 1000
+        self.predefined_keys = self.read_predefined_interface(openmct_interface_json_path)
+        self.received_keys = []
 
         # Setup Flask server
         self.flask_server = Flask(__name__, static_url_path='', static_folder=openmct_dist, template_folder='templates')
@@ -33,9 +37,26 @@ class TelemetryServer():
         self.socketio = SocketIO(self.flask_server, async_mode="gevent")
 
         self.setup_event_handlers()
+        
+    
+    def read_predefined_interface(self, interface_json_path):
+        if not os.path.exists(interface_json_path):
+            print(f"ERROR: OpenMCT predefined interface json does not exist:\n{interface_json_path}")
+            exit()
+        
+        # Load JSON data from file
+        with open(interface_json_path, 'r') as json_file:
+            parsed_interface = json.load(json_file)
+        
+        predefined_keys = [measurement["key"] for measurement in parsed_interface["measurements"]]
+        #print(predefined_keys)
+
+        print(f"Interface entries: {len(predefined_keys)}. Ver: {parsed_interface.get('version', None)}")
+        
+        return predefined_keys
 
     def run_flask(self, browser_port):
-        print(f"Running on http://localhost:{browser_port}/index.html")
+        print(f"Running on http://localhost:{browser_port}")
         self.socketio.run(self.flask_server, debug=False, use_reloader=False, port=browser_port)
     
     def setup_event_handlers(self):
@@ -92,6 +113,14 @@ class TelemetryServer():
                 for msg_key, msg_value in msg_batch.items():
                     # Handle spaces (replace with "_")
                     msg_key = msg_key.replace(" ", "_")
+
+                    # Check if the key is never received earlier
+                    if not msg_key in self.received_keys:
+                        if msg_key in self.predefined_keys:
+                            print(f"New: {msg_key}")
+                        else:
+                            print(f"Undefined: {msg_key}")
+                        self.received_keys.append(msg_key)
 
                     if self.subscribed_keys.get(msg_key):
                         # Handle tuples in realtime. Take only the first value

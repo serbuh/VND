@@ -1,7 +1,7 @@
 @echo off
 
 :check_virtualenv
-echo Checking virtual environment presence
+rem echo Checking virtual environment presence
 IF NOT EXIST env\Scripts\python.exe (
     echo Plesae create virtual environment
     GOTO if_to_install_virtualenv

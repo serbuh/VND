@@ -1,5 +1,5 @@
 @echo off
-echo Checking virtual environment presence
+rem echo Checking virtual environment presence
 IF NOT EXIST env\Scripts\python.exe (
     echo Plesae create virtual environment
     echo use install_dependencies.bat
