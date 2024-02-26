@@ -27,7 +27,7 @@ class TelemetryServer():
         # History DB
         self.historic_data = []
         self.subscribed_keys = {}
-        self.historic_data_max_size = 1000
+        self.historic_data_max_size = 10000
         self.predefined_keys = self.read_predefined_interface(openmct_interface_json_path)
         self.received_keys = []
 

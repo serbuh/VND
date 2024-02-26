@@ -33,8 +33,8 @@ status_dict = {
     "Location.lat": 0,
     "Location.lon": 0,
     "Location.alt": 0,
-    "Compass.azimuth" : 0.0,
-    "Compass.azimuth2" : 0.0,
+    "Compass.Magnitometer.A.azimuth" : 0.0,
+    "Compass.Magnitometer.B.azimuth2" : 0.0,
     "This_is.undefined_value" : 404,
 }
 
