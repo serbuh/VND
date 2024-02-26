@@ -9,5 +9,5 @@ Telem.Sinus drifting
 Location.lat
 Location.lon
 Location.alt
-Compass.azimuth
-Compass.azimuth2
+Compass.Magnitometer.A.azimuth
+Compass.Magnitometer.B.azimuth2

@@ -3,6 +3,73 @@ import os
 import json
 import configparser
 
+class Folder():
+    '''
+    Class that mimics the folders structure
+    '''
+    def __init__(self, name):
+        self.name = name
+        self.children = []
+
+    def add_chain(self, folder_chain:list):
+        '''
+        Create folder structure from list of nested folders
+        '''
+        # Stop condition - empty list
+        if not folder_chain:
+            return
+        
+        # Get current folder and the rest of the chain
+        curr_folder = folder_chain[0]
+        rest_of_chain = folder_chain[1:]
+
+        # Create folder if not exist
+        existing_child = self.get_child_by_name(curr_folder)
+
+        if not existing_child:
+            existing_child = Folder(curr_folder) # Create
+            self.children.append(existing_child) # Append to current
+        
+        existing_child.add_chain(rest_of_chain) # Continue to the newly added
+    
+    def get_child_by_name(self, name):
+        for child in self.children:
+            if child.name == name:
+                return child
+        return None
+
+    def print_tree(self, prefix=""):
+        print(f"{prefix}{self.name}")
+        for child in self.children:
+            child.print_tree(prefix=f"  {prefix}")
+        
+    def get_folders_objects_list(self, parent_chain=None):
+
+        if parent_chain is None:
+            parent_chain = []
+        
+        folders_list = []
+        current_chain = parent_chain
+        for child in self.children:
+            current_chain = parent_chain.copy() # Rewrite chain for each child
+            if current_chain:
+                folders_list.append({
+                    "name": child.name,
+                    "key": ".".join(current_chain) + "." + child.name,
+                    "nested_under": ".".join(current_chain),
+                })
+            else:
+                folders_list.append({
+                    "name": child.name,
+                    "key": child.name,
+                    "nested_under": "RootFolder",
+                })
+
+            current_chain.append(child.name)
+            folders_list.extend(child.get_folders_objects_list(current_chain))
+
+        return folders_list
+
 class JSON_Creator():
     def __init__(self, interface_file, server_config):
         # Constant output file
@@ -13,6 +80,8 @@ class JSON_Creator():
         self.string_prefix = "S:"
         self.enum_prefix = "E:"
         self.version_prefix = "Ver:"
+
+        self.folder_hierarchy = Folder("RootFolder")
 
         # Check existence of port config file
         if not os.path.exists(self.interface_file):
@@ -94,14 +163,13 @@ class JSON_Creator():
     def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> bool:
         
         dictionary = {
-            "name": "PredefinedTelemetry",
-            "key": "pl",
             "version": None,
             "measurements": []
         }
         
         # Iterate over each field name
         print("Fields:")
+        measurements = []
         for line in in_lines:
             # Remove new line symbol
             line = line.strip("\n")
@@ -129,8 +197,16 @@ class JSON_Creator():
             else: # Number
                 measurement = self._generate_measurement(line, "number")
 
-            dictionary["measurements"].append(measurement)
+            measurements.append(measurement)
 
+        # Build folder hierarchy in JSON
+        folder_list = self.build_folder_objects()
+
+        # Add folder hierarchy and the telemetry points to the JSON
+        dictionary["measurements"].extend(folder_list)
+        dictionary["measurements"].extend(measurements)
+
+        
         # Serializing json
         json_object = json.dumps(dictionary, indent=4)
 
@@ -163,10 +239,25 @@ class JSON_Creator():
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         # Replace spaces in field names (for the json)
         field_key = field_name.replace(" ", "_")
-        field_name = field_key.rsplit(".", 1)[-1] # Take only the last part of the string that is separated by dot
+        
+        # field_name - take only the last part of the string that is separated by dot
+        # folder_path - separated by dot.
+        #                            E.g.:
+        path = field_key.split(".")      # A.B.C.d
+        field_name = path[-1]            # d
+        folders_path = path[:-1]         # A.B.C
+        parent_folder = folders_path[-1] # C
+        
+        self.folder_hierarchy.add_chain(folders_path)
+
+        # If no parent folder - nest under root
+        if not parent_folder:
+            parent_folder = "RootFolder"
+        
         measurement = {
             "name": field_name,
             "key": field_key,
+            "nested_under": ".".join(folders_path),
             "values": [
                 {
                     "key": "value",
@@ -202,7 +293,10 @@ class JSON_Creator():
         
         return measurement
 
-
+    def build_folder_objects(self):
+        self.folder_hierarchy.print_tree()
+        folders_list = self.folder_hierarchy.get_folders_objects_list() # TODO except root
+        return folders_list
 
 if __name__ == "__main__":
     interface_file = os.path.join("..", "..", "openmct", "telemetry_plugin", "openmct_interface.json")

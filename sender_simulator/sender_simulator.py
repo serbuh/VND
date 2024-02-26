@@ -73,8 +73,8 @@ while True:
     status_dict["Location.lat"]         = 31.0
     status_dict["Location.lon"]         = 31.0
     status_dict["Location.alt"]         = 31.0
-    status_dict["Compass.azimuth"]      = azimuth
-    status_dict["Compass.azimuth2"]     = 360 - azimuth
+    status_dict["Compass.Magnitometer.A.azimuth"]  = azimuth
+    status_dict["Compass.Magnitometer.B.azimuth2"] = 360 - azimuth
 
     # Sending dict
     # print(f"Sending {status_dict}\r")
