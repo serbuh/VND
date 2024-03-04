@@ -8,4 +8,8 @@ IF NOT EXIST env\Scripts\python.exe (
     echo Using virtual env: env
 )
 
+rem Get version
+FOR /F "tokens=*" %%g IN ('type deploy\version.txt') do (SET ver=%%g)
+echo VND v%ver%
+
 env\Scripts\python.exe telemetry_server\server.py
