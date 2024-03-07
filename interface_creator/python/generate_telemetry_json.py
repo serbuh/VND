@@ -80,6 +80,7 @@ class JSON_Creator():
         self.string_prefix = "S:"
         self.enum_prefix = "E:"
         self.version_prefix = "Ver:"
+        self.root_name_prefix = "Root:"
 
         self.folder_hierarchy = Folder("RootFolder")
 
@@ -163,8 +164,9 @@ class JSON_Creator():
     def write_lines_to_json(self, in_lines, out_f:typing.TextIO) -> bool:
         
         dictionary = {
-            "version": None,
-            "measurements": []
+            "version": None,    # ICD version
+            "name": None,       # root name
+            "measurements": []  # telemetry measurements
         }
         
         # Iterate over each field name
@@ -192,6 +194,11 @@ class JSON_Creator():
                 else:
                     print(f"Version specified at least twice: {dictionary['version']}, {version}")
                     return False
+                continue
+
+            elif line.startswith(self.root_name_prefix): # Root name
+                root_name = line[len(self.root_name_prefix):] # Cut off prefix
+                dictionary['name'] = root_name
                 continue
 
             else: # Number
