@@ -54,3 +54,4 @@ env/
 __pycache__
 interface_creator/build*
 downloaded_req
+emulator/short_rec

@@ -65,8 +65,8 @@ npm run build:prod
 
 # Telemetry producer example
 ```
-cd sender_simulator
-python sender_simulator.py
+cd emulator
+python data_sender.py
 ```
 
 # Define messages interface and port

@@ -7,4 +7,3 @@
 git config --global --add safe.directory $PWD/openmct
 ( cd openmct && npm start ) &
 ( cd telemetry_server && npm start )
-#python3 sender_simulator.py

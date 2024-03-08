@@ -1,1 +1,0 @@
-env/bin/python sender_simulator/sender_simulator.py
