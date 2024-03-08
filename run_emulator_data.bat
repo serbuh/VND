@@ -8,4 +8,4 @@ IF NOT EXIST env\Scripts\python.exe (
     echo Using virtual env: env
 )
 
-env\Scripts\python.exe emulator\data_sender.py
+env\Scripts\python.exe -m emulator.data_sender

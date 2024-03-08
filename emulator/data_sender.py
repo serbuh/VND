@@ -3,22 +3,12 @@ import socket
 import json
 import math
 import random
-
-# UDP connection class
-class Dashboard():
-    def __init__(self, dashboard_channel):
-        self.udp_dashboard_addr = dashboard_channel
-        self.udp_dashboard_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_dashboard_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-    def Send(self, msg):
-        msg_serialized = str.encode(json.dumps(msg))
-        self.udp_dashboard_sock.sendto(msg_serialized, self.udp_dashboard_addr)
+from telemetry_server.sockets import Socket
 
 # Create udp connection
-dashboard_channel = ("127.0.0.1", 5555)
-print(f"Sending to {dashboard_channel[0]}:{dashboard_channel[1]}")
-dashboard = Dashboard(dashboard_channel)
+data_channel = ("127.0.0.1", 5555)
+print(f"Sending to {data_channel[0]}:{data_channel[1]}")
+data_socket = Socket(data_channel)
 
 #Create telemetry dictionary
 counter = 0
@@ -79,7 +69,7 @@ while True:
     # Sending dict
     # print(f"Sending {status_dict}\r")
     print(f"Sending {counter}", end="\r")
-    dashboard.Send(status_dict)
+    data_socket.send_json(status_dict)
     
     time.sleep(1/30.0)
     counter += 1

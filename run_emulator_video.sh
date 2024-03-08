@@ -1,1 +1,1 @@
-env/bin/python emulator/video_sender.py
+env/bin/python -m emulator.video_sender

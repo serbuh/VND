@@ -4,23 +4,13 @@ import os
 import json
 import imutils
 from glob import glob
+from telemetry_server.sockets import Socket
 print("Finished imports")
-
-# UDP connection class
-class Socket():
-    def __init__(self, dashboard_channel):
-        self.udp_dashboard_addr = dashboard_channel
-        self.udp_dashboard_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_dashboard_sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF,2**23)
-        self.udp_dashboard_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-    def send(self, msg_serialized):
-        self.udp_dashboard_sock.sendto(msg_serialized, self.udp_dashboard_addr)
 
 # Create udp connection
 video_channel = ("127.0.0.1", 5566)
 print(f"Sending video to {video_channel[0]}:{video_channel[1]}")
-video_sock = Socket(video_channel)
+video_sock = Socket(video_channel, big_buffer=True)
 
 video_folder=os.path.join("emulator", "elyakim_short", "*.tiff")
 video_files_list = glob(video_folder, recursive=True)
