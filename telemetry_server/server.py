@@ -101,7 +101,7 @@ class TelemetryServer():
 
         while self.listen:
 
-            data, _ = self.udp_dashboard_sock.recvfrom(65535) # Blocking. Should be in thread
+            data, _ = self.udp_dashboard_sock.recvfrom(self.buf_size) # Blocking. Should be in thread
             timestamp = datetime.datetime.now().timestamp() * 1000
 
             # New telemetry message
@@ -142,10 +142,8 @@ class TelemetryServer():
 if __name__ == '__main__':
     cfg = TelemServerConfig(os.path.join(script_folder, "server_config.ini"))
     
-    data_socket = (cfg.listen_to_ip, cfg.listen_to_port)
-
     # Start Telemetry listener
     telemetry_server = TelemetryServer()
-    telemetry_server.start_data_listening_thread(data_socket)
+    telemetry_server.start_data_listening_thread((cfg.telem_ip, cfg.telem_port))
     telemetry_server.run_flask(cfg.browser_port)
     

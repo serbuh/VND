@@ -3,16 +3,40 @@ import os
 
 class TelemServerConfig():
     def __init__(self, ini_file):
-        config = configparser.ConfigParser()
+        self.ini_file = ini_file
+        self.config = configparser.ConfigParser()
         if not os.path.isfile(ini_file):
             print(f"File does not exist: {ini_file}")
             exit()
         
-        config.read(ini_file)
+        self.config.read(ini_file)
 
-        self.browser_port = int(config['Comm']['browser_port'])
-        self.listen_to_ip = config['Comm']['listen_to_ip']
-        self.listen_to_port = int(config['Comm']['listen_to_port'])
+        self.browser_port = int(self.config['Comm']['browser_port'])
+
+        # Telem channel
+        self.telem_ip = self.config['Comm']['telem_ip']
+        self.telem_port = int(self.config['Comm']['telem_port'])
+
+        # Video channel
+        self.video_ip = self.config['Comm']['video_ip']
+        self.video_port = int(self.config['Comm']['video_port'])
+
+    def print_summary(self):
+        print(f"Listening for telemetry on   {self.telem_ip}:{self.telem_port}")
+        print(f"Listening for video on   {self.video_ip}:{self.video_port}")
+        print(f"Browser address:   localhost:{self.browser_port}")
+    
+    def write_to_file(self):
+        print("Rewriting config!")
+        self.print_summary()
+        self.config['Comm']['browser_port'] = self.browser_port
+        self.config['Comm']['telem_ip']     = self.telem_ip
+        self.config['Comm']['telem_port']   = self.telem_port
+        self.config['Comm']['video_ip']     = self.video_ip
+        self.config['Comm']['video_port']   = self.video_port
+        
+        with open(self.ini_file, "wt", encoding='utf-8') as f:
+            self.config.write(f)
 
 if __name__ == "__main__":
     script_folder = os.path.dirname(os.path.abspath(__file__))

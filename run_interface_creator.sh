@@ -1,2 +1,2 @@
 #!/bin/bash
-env/bin/python interface_creator/python/interface_creator.py
+env/bin/python -m interface_creator.python.interface_creator

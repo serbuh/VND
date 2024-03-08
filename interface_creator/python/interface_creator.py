@@ -9,7 +9,8 @@ except:
     input()
     exit()
 
-from generate_telemetry_json import JSON_Creator
+from interface_creator.python.generate_telemetry_json import JSON_Creator
+from telemetry_server.config_parser import TelemServerConfig
 
 
 class InterfaceCreatorGUI():
@@ -33,7 +34,9 @@ class InterfaceCreatorGUI():
             sg.popup(f'No config files in folder {self.interfaces_folder}')
             return
 
-        browser_port, listen_to_ip, listen_to_port = self.json_creator.get_port_from_file()
+        # Read config
+        self.cfg = TelemServerConfig(os.path.join("telemetry_server", "server_config.ini"))
+        self.cfg.print_summary()
 
         # Menu layout
         menu_content = [['File', ['Open Folder', 'Exit']], ['Help', ['About', ]]]
@@ -43,15 +46,21 @@ class InterfaceCreatorGUI():
         label_width = 18
         config_layout = [[
             sg.Text('Listening for telemetry on', size=(label_width, 1)),
-            sg.Input(listen_to_ip, enable_events=True, size=(15, 1), key='-listen_to_ip-', justification='left'),
+            sg.Input(self.cfg.telem_ip, enable_events=True, size=(15, 1), key='-telem_ip-', justification='left'),
             sg.Text(':'),
-            sg.Input(listen_to_port, enable_events=True, size=(5, 1), key='-listen_to_port-', justification='left'),
+            sg.Input(self.cfg.telem_port, enable_events=True, size=(5, 1), key='-telem_port-', justification='left'),
+        ],
+        [
+            sg.Text('Listening for video on', size=(label_width, 1)),
+            sg.Input(self.cfg.video_ip, enable_events=True, size=(15, 1), key='-video_ip-', justification='left'),
+            sg.Text(':'),
+            sg.Input(self.cfg.video_port, enable_events=True, size=(5, 1), key='-video_port-', justification='left'),
         ],
         [
             sg.Text('Browser port', size=(label_width, 1)),
             sg.Input("localhost", enable_events=True, size=(15, 1), readonly=True, text_color="grey", justification='left'),
             sg.Text(':'),
-            sg.Input(browser_port, enable_events=True, size=(5, 1), key='-browser_port-', justification='left'),
+            sg.Input(self.cfg.browser_port, enable_events=True, size=(5, 1), key='-browser_port-', justification='left'),
         ],
         [
             sg.Button("Update"),
@@ -116,10 +125,12 @@ class InterfaceCreatorGUI():
                     text = f.read()
                 self.popup_generate(text)
             elif event == 'Update':
-                browser_port = self.window["-browser_port-"].get()
-                listen_to_ip = self.window["-listen_to_ip-"].get()
-                listen_to_port = self.window["-listen_to_port-"].get()
-                self.json_creator.set_port_to_file(browser_port, listen_to_ip, listen_to_port)
+                self.cfg.browser_port = self.window["-browser_port-"].get()
+                self.cfg.telem_ip     = self.window["-telem_ip-"].get()
+                self.cfg.telem_port   = self.window["-telem_port-"].get()
+                self.cfg.video_ip     = self.window["-video_ip-"].get()
+                self.cfg.video_port   = self.window["-video_port-"].get()
+                self.cfg.write_to_file()
             elif event == 'Exit':
                 break
             # ----------------- Menu choices -----------------

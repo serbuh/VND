@@ -2,6 +2,7 @@ import typing
 import os
 import json
 import configparser
+from telemetry_server.config_parser import TelemServerConfig
 
 class Folder():
     '''
@@ -221,28 +222,6 @@ class JSON_Creator():
 
         return True
 
-    def get_port_from_file(self):
-        config = configparser.ConfigParser()
-        config.read(self.server_config)
-        browser_port = str(config['Comm']['browser_port'])
-        listen_to_ip = str(config['Comm']['listen_to_ip'])
-        listen_to_port = str(config['Comm']['listen_to_port'])
-        print(f"Listening for telemetry on   {listen_to_ip}:{listen_to_port}")
-        print(f"Browser address:   localhost:{browser_port}")
-        return browser_port, listen_to_ip, listen_to_port
-
-    def set_port_to_file(self, browser_port, listen_to_ip, listen_to_port):
-        print(f"Listening for telemetry on   {listen_to_ip}:{listen_to_port}")
-        print(f"Browser address:   localhost:{browser_port}")
-        config = configparser.ConfigParser()
-        config.read(self.server_config)
-        config['Comm']['browser_port'] = browser_port
-        config['Comm']['listen_to_ip'] = listen_to_ip
-        config['Comm']['listen_to_port'] = listen_to_port
-        
-        with open(self.server_config, "wt", encoding='utf-8') as f:
-            config.write(f)
-
     def _generate_measurement(self, field_name, open_mct_type, enum_values=None):
         # Replace spaces in field names (for the json)
         field_key = field_name.replace(" ", "_")
@@ -310,16 +289,21 @@ if __name__ == "__main__":
     server_config = os.path.join("..", "..", "telemetry_server", "server_config.ini")
     json_creator = JSON_Creator(interface_file, server_config)
     
+    # Read config
+    cfg = TelemServerConfig(os.path.join("telemetry_server", "server_config.ini"))
+    cfg.print_summary()
+    
     # Set port
-    browser_port, listen_to_ip, listen_to_port = json_creator.get_port_from_file()
-    choice_port = input(f"Listening to telemetry on port {browser_port}. Change port? [y/N]")
+    choice_port = input(f"Listening to telemetry on port {cfg.browser_port}. Change port? [y/N]")
 
     if choice_port in ["y", "Y"]:
-        browser_port = input("Browser port:\n")
-        listen_to_ip = input("Telemetry ip:\n")
-        listen_to_port = input("Telemetry port:\n")
+        cfg.browser_port = input("Browser port:\n")
+        cfg.telem_ip = input("Telemetry ip:\n")
+        cfg.telem_port = input("Telemetry port:\n")
+        cfg.video_ip = input("Video ip:\n")
+        cfg.video_port = input("Video port:\n")
 
-        json_creator.set_port_to_file(browser_port, listen_to_ip, listen_to_port)
+        cfg.write_to_file()
 
     # Set interface
     interfaces_folder = os.path.join(".", "examples")

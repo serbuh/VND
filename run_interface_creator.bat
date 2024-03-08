@@ -8,4 +8,4 @@ IF NOT EXIST env\Scripts\python.exe (
     echo Using virtual env: env
 )
 
-env\Scripts\python.exe interface_creator\python\interface_creator.py
+env\Scripts\python.exe -m interface_creator.python.interface_creator
