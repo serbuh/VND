@@ -114,18 +114,11 @@ class TelemetryServer():
             data, _ = self.udp_video_sock.recvfrom(self.buf_size) # Blocking. Should be in thread
             timestamp = datetime.datetime.now().timestamp() * 1000
 
-            # Emit realtime messages to OpenMCT
+            # Emit realtime video to OpenMCT
             with self.flask_server.app_context():
-                # New video message
                 self.socketio.emit("live-video", {"timestamp": timestamp, "frames_count": frames_count, "data": base64.b64encode(data).decode()})
             
-            # Save history
-            # msg_batch["timestamp"] = timestamp # append timestamp
-            # self.historic_data.append(msg_batch) # [{"field_1": 1, "field_2": 2, "timestamp":timestamp}, {...}, ...]
-            
-            # Cyclic buffer like
-            # if len(self.historic_data) > self.historic_data_max_size:
-            #     self.historic_data.pop(0)
+            # NOTE History of frames has not yet implemented
                 
             frames_count += 1
 
