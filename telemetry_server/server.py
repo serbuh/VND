@@ -108,7 +108,7 @@ class TelemetryServer():
         self.udp_video_sock.bind(address_listen_to)
 
         print(f"Listening video on {address_listen_to[0]}:{address_listen_to[1]}")
-
+        frames_count = 0
         while self.listen:
 
             data, _ = self.udp_video_sock.recvfrom(self.buf_size) # Blocking. Should be in thread
@@ -117,7 +117,7 @@ class TelemetryServer():
             # Emit realtime messages to OpenMCT
             with self.flask_server.app_context():
                 # New video message
-                self.socketio.emit ("live-video", {"data": base64.b64encode(data).decode()})
+                self.socketio.emit("live-video", {"timestamp": timestamp, "frames_count": frames_count, "data": base64.b64encode(data).decode()})
             
             # Save history
             # msg_batch["timestamp"] = timestamp # append timestamp
@@ -126,6 +126,8 @@ class TelemetryServer():
             # Cyclic buffer like
             # if len(self.historic_data) > self.historic_data_max_size:
             #     self.historic_data.pop(0)
+                
+            frames_count += 1
 
     def start_data_listening(self, address_listen_to):
         self.udp_dashboard_sock.bind(address_listen_to)

@@ -57,7 +57,7 @@ video_channel = (cfg.video_send_ip, cfg.video_port)
 print(f"Sending video to {video_channel[0]}:{video_channel[1]}")
 video_sock = Socket(video_channel, big_buffer=True)
 
-video_feeder = FrameGenerator(width=640, height=480, fps=10, noisy_background=True)
+video_feeder = FrameGenerator(width=640, height=480, fps=10, noisy_background=False)
 
 while True:
     # Get frame
