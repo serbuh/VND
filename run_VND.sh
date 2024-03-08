@@ -1,2 +1,2 @@
 #!/bin/bash
-env/bin/python telemetry_server/server.py
+env/bin/python -m telemetry_server.server

@@ -1,5 +1,6 @@
 from flask import Flask, render_template,Response,request
 from flask_socketio import SocketIO,send,emit
+from telemetry_server.config_parser import TelemServerConfig
 import socket
 import json
 import datetime
@@ -139,18 +140,12 @@ class TelemetryServer():
         
 
 if __name__ == '__main__':
-    # Params
-    import configparser
-    config = configparser.ConfigParser()
-    config.read(os.path.join(script_folder, "server_config.ini"))
-
-    browser_port = int(config['Comm']['browser_port'])
-    listen_to_ip = config['Comm']['listen_to_ip']
-    listen_to_port = int(config['Comm']['listen_to_port'])
-    address_listen_to = (listen_to_ip, listen_to_port)
+    cfg = TelemServerConfig(os.path.join(script_folder, "server_config.ini"))
+    
+    data_socket = (cfg.listen_to_ip, cfg.listen_to_port)
 
     # Start Telemetry listener
     telemetry_server = TelemetryServer()
-    telemetry_server.start_data_listening_thread(address_listen_to)
-    telemetry_server.run_flask(browser_port)
+    telemetry_server.start_data_listening_thread(data_socket)
+    telemetry_server.run_flask(cfg.browser_port)
     

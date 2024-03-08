@@ -12,4 +12,4 @@ rem Get version
 FOR /F "tokens=*" %%g IN ('type deploy\version.txt') do (SET ver=%%g)
 echo VND v%ver%
 
-env\Scripts\python.exe telemetry_server\server.py
+env\Scripts\python.exe -m telemetry_server.server
