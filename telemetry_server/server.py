@@ -1,5 +1,5 @@
-from flask import Flask, render_template,Response,request
-from flask_socketio import SocketIO,send,emit
+from flask import Flask
+from flask_socketio import SocketIO
 from telemetry_server.config_parser import TelemServerConfig
 import socket
 import json
@@ -8,6 +8,7 @@ import threading
 import os
 from gevent import monkey
 import json
+import base64
 
 monkey.patch_all()
 
@@ -20,9 +21,14 @@ openmct_interface_json_path = os.path.join(openmct_dist, "telemetry_plugin", "op
 class TelemetryServer():
     def __init__(self):
         self.buf_size = 65535
+        
+        # Data
         self.udp_dashboard_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # self.udp_dashboard_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.udp_dashboard_sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.buf_size)
+        
+        # Video
+        self.udp_video_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udp_video_sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, self.buf_size)
         self.listen = True
 
         # History DB
@@ -94,6 +100,33 @@ class TelemetryServer():
         # Start listening for telemetry
         threading.Thread(target=self.start_data_listening, args=(address_listen_to,), daemon=True).start()
 
+    def start_video_listening_thread(self, address_listen_to):
+        # Start listening for telemetry
+        threading.Thread(target=self.start_video_listening, args=(address_listen_to,), daemon=True).start()
+
+    def start_video_listening(self, address_listen_to):
+        self.udp_video_sock.bind(address_listen_to)
+
+        print(f"Listening video on {address_listen_to[0]}:{address_listen_to[1]}")
+
+        while self.listen:
+
+            data, _ = self.udp_video_sock.recvfrom(self.buf_size) # Blocking. Should be in thread
+            timestamp = datetime.datetime.now().timestamp() * 1000
+
+            # Emit realtime messages to OpenMCT
+            with self.flask_server.app_context():
+                # New video message
+                self.socketio.emit ("live-video", {"data": base64.b64encode(data).decode()})
+            
+            # Save history
+            # msg_batch["timestamp"] = timestamp # append timestamp
+            # self.historic_data.append(msg_batch) # [{"field_1": 1, "field_2": 2, "timestamp":timestamp}, {...}, ...]
+            
+            # Cyclic buffer like
+            # if len(self.historic_data) > self.historic_data_max_size:
+            #     self.historic_data.pop(0)
+
     def start_data_listening(self, address_listen_to):
         self.udp_dashboard_sock.bind(address_listen_to)
 
@@ -145,5 +178,5 @@ if __name__ == '__main__':
     # Start Telemetry listener
     telemetry_server = TelemetryServer()
     telemetry_server.start_data_listening_thread((cfg.telem_ip, cfg.telem_port))
+    telemetry_server.start_video_listening_thread((cfg.video_ip, cfg.video_port))
     telemetry_server.run_flask(cfg.browser_port)
-    

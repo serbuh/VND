@@ -1,12 +1,13 @@
 import time
-import socket
-import json
 import math
 import random
+import os
 from telemetry_server.sockets import Socket
+from telemetry_server.config_parser import TelemServerConfig
 
 # Create udp connection
-data_channel = ("127.0.0.1", 5555)
+cfg = TelemServerConfig(os.path.join("telemetry_server", "server_config.ini"))
+data_channel = (cfg.telem_send_ip, cfg.telem_port)
 print(f"Sending to {data_channel[0]}:{data_channel[1]}")
 data_socket = Socket(data_channel)
 

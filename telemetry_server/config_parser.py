@@ -21,6 +21,10 @@ class TelemServerConfig():
         self.video_ip = self.config['Comm']['video_ip']
         self.video_port = int(self.config['Comm']['video_port'])
 
+        # Emulator sending:
+        self.telem_send_ip = self.config['Emulator']['telem_send_ip']
+        self.video_send_ip = self.config['Emulator']['video_send_ip']
+
     def print_summary(self):
         print(f"Listening for telemetry on   {self.telem_ip}:{self.telem_port}")
         print(f"Listening for video on   {self.video_ip}:{self.video_port}")
@@ -34,6 +38,9 @@ class TelemServerConfig():
         self.config['Comm']['telem_port']   = self.telem_port
         self.config['Comm']['video_ip']     = self.video_ip
         self.config['Comm']['video_port']   = self.video_port
+
+        self.config['Emulator']['telem_send_ip'] = self.telem_send_ip
+        self.config['Emulator']['video_send_ip'] = self.video_send_ip
         
         with open(self.ini_file, "wt", encoding='utf-8') as f:
             self.config.write(f)

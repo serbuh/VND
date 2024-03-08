@@ -1,19 +1,23 @@
-import socket
 import cv2
 import os
-import json
 import imutils
 from glob import glob
 from telemetry_server.sockets import Socket
+from telemetry_server.config_parser import TelemServerConfig
+
 print("Finished imports")
 
+script_folder = os.path.dirname(os.path.abspath(__file__))
+
 # Create udp connection
-video_channel = ("127.0.0.1", 5566)
+cfg = TelemServerConfig(os.path.join("telemetry_server", "server_config.ini"))
+video_channel = (cfg.video_send_ip, cfg.video_port)
 print(f"Sending video to {video_channel[0]}:{video_channel[1]}")
 video_sock = Socket(video_channel, big_buffer=True)
 
-video_folder=os.path.join("emulator", "elyakim_short", "*.tiff")
+video_folder=os.path.join(script_folder, "short_rec", "*.tiff")
 video_files_list = glob(video_folder, recursive=True)
+print(f"Found {len(video_files_list)} frames")
 
 for frame_path in video_files_list:
     print(frame_path)
@@ -30,6 +34,6 @@ for frame_path in video_files_list:
     if cv2.waitKey(30) & 0xFF == ord('q'):
         break
     
-    video_sock.send(buffer)
+    video_sock.send_serialized(buffer)
 
 print("Finish")

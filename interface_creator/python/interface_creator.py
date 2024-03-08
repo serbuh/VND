@@ -1,7 +1,6 @@
 import os
 script_folder = os.path.dirname(os.path.abspath(__file__))
 
-
 try:
     import PySimpleGUI as sg
 except:
