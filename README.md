@@ -26,27 +26,33 @@ To install modules from internet:
 cd openmct && npm install
 ```
 
-To create new deployment version (DEV):
+# Build, rebuild openmct
+Rebuild into `dist` and run openmct:
+Dev/prod version / build and watch:
 ```
+# Script:
+build_dev_and_run.<sh/bat>
+build_prod_and_run.<sh/bat>
+build_and_watch.<sh/bat>
+
+# Manually:
 npm run build:dev
-```
+npm run build:prod
+npm run build:watch
+```   
+
 NOTE: In `openmct/.webpack/webpack.dev.js` change   
 `__OPENMCT_ROOT_RELATIVE__: '"dist/"'`   
 to   
 `__OPENMCT_ROOT_RELATIVE__: '""'`
 
-To create new deployment version (Production):
-```
-npm run build:prod
-```
-
 
 # Run
 ```
+# Script:
 run_VND.<sh/bat>
-```
-Manually:
-```
+
+# Manually:
 cd openmct && npm start
 ```
 
@@ -58,7 +64,7 @@ python data_sender.py
 
 # Open OpenMCT in a browser
 ```
-localhost:8080
+localhost:3000
 ```
 
 # Links
