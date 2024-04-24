@@ -4,4 +4,4 @@ flask-socketio
 gevent
 greenlet
 gevent-websocket
-PySimpleGUI
+interface_creator/python/installs/PySimpleGUI-4.60.5-py3-none-any.whl

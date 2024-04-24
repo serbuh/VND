@@ -11,7 +11,8 @@ Tested with:
 
 * Updated browser!
 * Install Node.js: https://nodejs.org/en/download
-* [optional] Install python with PySimpleGUI package
+* Install python
+* Create virtualenv with name `env` : `install_requirements.<sh/bat>`
 
 # Defining interface and ports
 Use GUI: `run_interface_creator.<bat/sh>`   

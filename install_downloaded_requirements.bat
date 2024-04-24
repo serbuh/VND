@@ -7,7 +7,7 @@ IF NOT EXIST env\Scripts\python.exe (
     GOTO if_to_install_virtualenv
 ) ELSE (
     echo Using virtual env: env
-    GOTO install_reqs
+    GOTO install_wheels
 )
 
 :if_to_install_virtualenv
@@ -26,9 +26,8 @@ GOTO if_to_install_virtualenv
 python -m venv env
 GOTO check_virtualenv
 
-:install_reqs
-echo Installing requirements ...
-env\Scripts\python -m pip install --upgrade pip
-env\Scripts\python -m pip install -r requirements.txt
-echo Finished.
+:install_wheels
+echo Installing wheels ...
+for %%x in (downloaded_req/*.whl) do env\Scripts\python -m pip install --retries 0 downloaded_req\\"%%x"
+echo Finished. Check if no errors. Otherwise run this script again until errors disapear
 pause

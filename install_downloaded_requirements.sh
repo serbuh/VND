@@ -29,6 +29,13 @@ else
     if_to_install_virtualenv
 fi
 
-echo "Installing requirements ..."
-env/bin/python -m pip install --upgrade pip
-env/bin/python -m pip install -r requirements.txt
+echo "Installing wheels ..."
+cd downloaded_req
+for file in *.whl; do
+    if [ -f "$file" ]; then
+        echo "Processing file: $file"
+        pushd ..
+        env/bin/python -m pip install --retries 0 downloaded_req/$file
+        popd
+    fi
+done
