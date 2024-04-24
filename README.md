@@ -3,47 +3,23 @@
 Web based customized implementation of NASA's telemetry visualization tool    
 OpenMCT official git: https://nasa.github.io/openmct/
 
-NOTE:   
-Don't forget to get openmct as a submodule.   
-If sumbodule is somehow not accessable due to permissions issues - try downloading it manually into `openmct` folder   
-
-Fetch submodules while cloning:   
-`git clone --recurse-submodules <git url>`   
-Fetch submodules for already cloned project:   
-`git submodule update --init --recursive`   
-
 Tested with:   
 `node v18.18.0, v18.18.2, v20.6.1`   
 `npm v9.8.1, v10.1.0`   
 
-# Install - Windows
-Prerequisites:
+# Install
+
 * Updated browser!
-* Node.js (https://nodejs.org/en/download)
-* [optional] python with PySimpleGUI package
+* Install Node.js: https://nodejs.org/en/download
+* [optional] Install python with PySimpleGUI package
 
-# Install - linux
-Prerequisites:
-* Updated browser!
-* Docker engine (verify installation: `sudo docker run hello-world`)
+# Defining interface and ports
+Use GUI: `run_interface_creator.<bat/sh>`   
+* GUI edits openmct json   
+`openmct/telemetry_plugin/openmct_interface.json`   
+You can do it manually if you know what you are doing
 
-### Following installations are not needed if you are using docker
-* Node.js
-* python with PySimpleGUI package
-
-### Node.js manual installatiobn
-1) Dowload https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
-2) Extract node to some folder   
-`sudo tar -xvf node-v20.10.0-linux-x64.tar.xz`
-3) Link to that node version   
-`sudo ln -f -s <path to extracted node>/node-v20.10.0-linux-x64/bin/node /usr/local/bin/node`
-
-
-### Install node modules
-Requires internet connection.   
-OR   
-If you got distributed version of VND for StandAlone machines - this step is already done for you.   
-
+# Online installation
 To install modules from internet:
 ```
 cd openmct && npm install
@@ -63,115 +39,25 @@ To create new deployment version (Production):
 npm run build:prod
 ```
 
+
+# Run
+```
+run_VND.<sh/bat>
+```
+Manually:
+```
+cd openmct && npm start
+```
+
 # Telemetry producer example
 ```
 cd emulator
 python data_sender.py
 ```
 
-# Define messages interface and port
-Use "simple interface format" (`interface_creator/python/examples/...`) and generate OpenMCT json format from it.
-Your options:   
-1) [Recommended] Use python GUI tool   
-[linux docker] `./run_interface_creator.sh`   
-[windows] `runners/windows/run_interface_creator_py.bat`   
-[windows] `runners/windows/run_interface_creator_exe.bat`   
-[manual] `cd interface_creator/python && python interface_creator.py`   
-
-1) Use python console tool   
-[linux docker] `./run_interface_creator.sh -c`   
-[manual] `cd interface_creator/python && python generate_telemetry_json.py`
-
-1) Edit openmct json   
-`openmct/telemetry_plugin/openmct_interface.json`   
-NOTE: Not recomended to do it manually. This approach is recommended if you have your own interface tool that converts your interface to openmct json.
-
-
-### "Simple interface format" spec
-* each field means one message type
-* default message type is float (described as 'integer' in json. Have no idea why)
-* If you want to send a string, not a float - use 'S:' prefix. That will tell the script to put a 'string' type in json
-```
-SomeSection.Some field name
-status.the_status
-location.lat
-location.lon
-location.alt
-S:Status.State
-compass.azimuth
-```
-
-# Run - windows
-Run OpenMCT   
-`runners/windows/run_openmct.bat`   
-Run VND   
-`runners/windows/run_telemetry_server.bat`
-
-# Run - linux docker
-Run VND + OpenMCT   
-`./run_VND.sh`   
-[for debug] Run docker in interactive mode   
-`./run_VND.sh -i` 
-
-# Run - manually
-Run OpenMCT
-```
-cd openmct && npm start
-```
-Start Telemetry Server   
-(for the first time you need to wait untill openMCT finishes the build for the `distr` folder)
-```
-cd telemetry_server && npm start
-```
 # Open OpenMCT in a browser
 ```
 localhost:8080
-```
-
-
-# Docker cheetsheet for deploy
-
-Save docker (On deployment machine):   
-`docker save -o vnd-docker.tar node:20`
-
-Load docker (On Stand Alone machine):   
-`docker load -i vnd-docker.tar`
-
-# Technical info
-Changes that have been made to raw openMCT version:   
-Added historical and realtime telemetry plugins (`telemetry_plugin` folder)   
-Added messages interface (`messages_interface` folder)   
-
-In `openmct/.webpack/webpack.common.js` added lines:
-```
-const config = {
-    new VueLoaderPlugin(),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: 'telemetry_plugin',
-          to: 'telemetry_plugin'
-        },
-    ...
-```
-In `openmct/index.html` added lines:
-```
-    openmct.install(openmct.plugins.TelemetryDictionaryPlugin());
-    openmct.install(openmct.plugins.HistoricalTelemetryPlugin('TelemetryDomainObject', '/CVASHistory/', 'localhost'));
-    openmct.install(openmct.plugins.RealtimeTelemetryPlugin('TelemetryDomainObject', '/CVASRealtime/', 'localhost'));
-```
-
-In `openmct/src/plugins/plugins.js` added lines:
-```
-import HistoricalTelemetryPlugin from '../../telemetry_plugin/historical-telemetry-plugin.js';
-import RealtimeTelemetryPlugin from '../../telemetry_plugin/realtime-telemetry-plugin.js';
-import TelemetryDictionaryPlugin from '../../telemetry_plugin/telemetry-dictionary-plugin.js';
-
-...
-
-plugins.HistoricalTelemetryPlugin = HistoricalTelemetryPlugin;
-plugins.RealtimeTelemetryPlugin = RealtimeTelemetryPlugin;
-plugins.TelemetryDictionaryPlugin = TelemetryDictionaryPlugin;
 ```
 
 # Links
