@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, redirect, url_for
 from flask_socketio import SocketIO
 from telemetry_server.config_parser import TelemServerConfig
 import socket
@@ -81,6 +81,29 @@ class TelemetryServer():
         @self.flask_server.route('/')
         def static_file():
             return self.flask_server.send_static_file('index.html')
+        
+        ##### Control page functions #####
+        @self.flask_server.route('/control')
+        def control_page():
+            return '''
+            <html>
+            <body>
+                <h1>Experiment</h1>
+                <form action="/save_experiment" method="post">
+                    <button type="submit">Save</button>
+                </form>
+            </body>
+            </html>
+            '''
+
+        @self.flask_server.route('/save_experiment', methods=['POST'])
+        def save_experiment_function():
+            # Dump historic data to file
+            duration_minutes = self.save_historic_data()
+            status = f"Saved {duration_minutes} minutes experiment"
+            print(status)
+            return redirect(url_for('control_page'))
+        ##### End of control page functions #####
 
         @self.flask_server.route('/history/<key>/<start>/<end>/<strategy>/<size>')
         def handle_historic_data(key, start, end, strategy, size):
@@ -165,10 +188,6 @@ class TelemetryServer():
             # Cyclic buffer like
             if len(self.historic_data) > self.historic_data_max_size:
                 self.historic_data.pop(0)
-            
-            # Dump historic data to file
-            if False:
-                self.save_historic_data()
     
     def save_historic_data(self):
         if not len(self.historic_data):
@@ -183,6 +202,8 @@ class TelemetryServer():
         dump_file = f"dump_{f_year}-{f_month}-{f_day}__{f_hour}-{f_minute}-{f_sec}__{duration_minutes}_min.pkl"
         with open(dump_file, 'wb') as f:
             pickle.dump(self.historic_data, f)
+
+        return duration_minutes
             
     def convert_millisec_to_date_string(self, timestamp_milliseconds):
         # Convert milliseconds since epoch to a datetime object
