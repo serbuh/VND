@@ -90,6 +90,7 @@ class TelemetryServer():
             <body>
                 <h1>Experiment</h1>
                 <form action="/save_experiment" method="post">
+                    <input type="text" name="save_postfix" placeholder="Experiment name">
                     <button type="submit">Save</button>
                 </form>
             </body>
@@ -98,9 +99,10 @@ class TelemetryServer():
 
         @self.flask_server.route('/save_experiment', methods=['POST'])
         def save_experiment_function():
+            save_postfix = request.form['save_postfix']
             # Dump historic data to file
-            duration_minutes = self.save_historic_data()
-            status = f"Saved {duration_minutes} minutes experiment"
+            experiment_name = self.save_historic_data(save_postfix)
+            status = f"Saved experiment: {experiment_name}"
             print(status)
             return redirect(url_for('control_page'))
         ##### End of control page functions #####
@@ -189,21 +191,36 @@ class TelemetryServer():
             if len(self.historic_data) > self.historic_data_max_size:
                 self.historic_data.pop(0)
     
-    def save_historic_data(self):
+    def save_historic_data(self, save_postfix=""):
+        # Do nothing if no historic data present
         if not len(self.historic_data):
-            return
+            return "Empty experiment"
         
+        # Folder name to save data
+        dump_folder_name = "saved_experiments"
+        
+        # Create folder if not exist
+        if not os.path.exists(dump_folder_name):
+            os.makedirs(dump_folder_name)
+
+        # Calculate start and stop timestamps
         start_millisec = self.historic_data[0]['timestamp']
         stop_millisec = self.historic_data[-1]['timestamp']
         f_year, f_month, f_day, f_hour, f_minute, f_sec = self.convert_millisec_to_date_string(start_millisec)
         duration_minutes = round((stop_millisec - start_millisec) / 1000 / 60, 1)
         
+        # Give experiment a name
+        if save_postfix:
+            save_postfix = "_" + save_postfix
+        experiment_name = f"dump_{f_year}-{f_month}-{f_day}__{f_hour}-{f_minute}-{f_sec}__{duration_minutes}_min{save_postfix}.pkl"
+        full_rel_path = os.path.join(dump_folder_name, experiment_name)
+
         # Dump history to file
-        dump_file = f"dump_{f_year}-{f_month}-{f_day}__{f_hour}-{f_minute}-{f_sec}__{duration_minutes}_min.pkl"
-        with open(dump_file, 'wb') as f:
+        with open(full_rel_path, 'wb') as f:
             pickle.dump(self.historic_data, f)
 
-        return duration_minutes
+        # Return experiment name
+        return experiment_name
             
     def convert_millisec_to_date_string(self, timestamp_milliseconds):
         # Convert milliseconds since epoch to a datetime object
