@@ -55,3 +55,4 @@ __pycache__
 interface_creator/build*
 downloaded_req
 emulator/short_rec
+saved_experiments

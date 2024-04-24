@@ -67,6 +67,12 @@ python data_sender.py
 localhost:3000
 ```
 
+# Control page (Save/Load experiments)
+```
+localhost:3000/control
+```
+
+
 # Links
 | | |
 |-|-|
