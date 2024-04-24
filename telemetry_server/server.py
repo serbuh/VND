@@ -85,6 +85,7 @@ class TelemetryServer():
         ##### Control page functions #####
         @self.flask_server.route('/control')
         def control_page():
+            status_message = request.args.get('status_message')
             return '''
             <html>
             <body>
@@ -93,9 +94,10 @@ class TelemetryServer():
                     <input type="text" name="save_postfix" placeholder="Experiment name">
                     <button type="submit">Save</button>
                 </form>
+                <p>Status: {}</p>
             </body>
             </html>
-            '''
+            '''.format(status_message if status_message else '')
 
         @self.flask_server.route('/save_experiment', methods=['POST'])
         def save_experiment_function():
@@ -104,7 +106,7 @@ class TelemetryServer():
             experiment_name = self.save_historic_data(save_postfix)
             status = f"Saved experiment: {experiment_name}"
             print(status)
-            return redirect(url_for('control_page'))
+            return redirect(url_for('control_page', status_message=status))
         ##### End of control page functions #####
 
         @self.flask_server.route('/history/<key>/<start>/<end>/<strategy>/<size>')
@@ -220,7 +222,7 @@ class TelemetryServer():
             pickle.dump(self.historic_data, f)
 
         # Return experiment name
-        return experiment_name
+        return full_rel_path
             
     def convert_millisec_to_date_string(self, timestamp_milliseconds):
         # Convert milliseconds since epoch to a datetime object
