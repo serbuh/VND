@@ -9,6 +9,7 @@ import os
 from gevent import monkey
 import json
 import base64
+import pickle
 
 monkey.patch_all()
 
@@ -164,7 +165,32 @@ class TelemetryServer():
             # Cyclic buffer like
             if len(self.historic_data) > self.historic_data_max_size:
                 self.historic_data.pop(0)
+            
+            # Dump historic data to file
+            if False:
+                self.save_historic_data()
+    
+    def save_historic_data(self):
+        if not len(self.historic_data):
+            return
+        
+        start_millisec = self.historic_data[0]['timestamp']
+        stop_millisec = self.historic_data[-1]['timestamp']
+        f_year, f_month, f_day, f_hour, f_minute, f_sec = self.convert_millisec_to_date_string(start_millisec)
+        duration_minutes = round((stop_millisec - start_millisec) / 1000 / 60, 1)
+        
+        # Dump history to file
+        dump_file = f"dump_{f_year}-{f_month}-{f_day}__{f_hour}-{f_minute}-{f_sec}__{duration_minutes}_min.pkl"
+        with open(dump_file, 'wb') as f:
+            pickle.dump(self.historic_data, f)
+            
+    def convert_millisec_to_date_string(self, timestamp_milliseconds):
+        # Convert milliseconds since epoch to a datetime object
+        timestamp_seconds = timestamp_milliseconds / 1000  # Convert milliseconds to seconds
+        t = datetime.datetime.fromtimestamp(timestamp_seconds)
 
+        # Extract year, month, and day from the datetime object
+        return t.year, t.month, t.day, t.hour, t.minute ,t.second
         
 
 if __name__ == '__main__':
