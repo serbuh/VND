@@ -10,6 +10,7 @@ from gevent import monkey
 import json
 import base64
 import pickle
+import time
 
 monkey.patch_all()
 
@@ -154,6 +155,19 @@ class TelemetryServer():
         # Start listening for telemetry
         threading.Thread(target=self.start_video_listening, args=(address_listen_to,), daemon=True).start()
 
+    def start_ticking_thread(self):
+        # Start ticking with remote clock
+        threading.Thread(target=self.start_ticking, daemon=True).start()
+
+    def start_ticking(self):
+        while self.listen:
+            timestamp = datetime.datetime.now().timestamp() * 1000
+            # Emit realtime video to OpenMCT
+            with self.flask_server.app_context():
+                self.socketio.emit("realtime-tick", {"timestamp": timestamp})
+            time.sleep(1)
+            
+
     def start_video_listening(self, address_listen_to):
         self.udp_video_sock.bind(address_listen_to)
 
@@ -271,4 +285,5 @@ if __name__ == '__main__':
     telemetry_server = TelemetryServer()
     telemetry_server.start_data_listening_thread((cfg.telem_ip, cfg.telem_port))
     telemetry_server.start_video_listening_thread((cfg.video_ip, cfg.video_port))
+    telemetry_server.start_ticking_thread()
     telemetry_server.run_flask(cfg.browser_port)

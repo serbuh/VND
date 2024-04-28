@@ -18,8 +18,8 @@ const config = {
 In `openmct/index.html` added lines:
 ```
     openmct.install(openmct.plugins.TelemetryDictionaryPlugin());
-    openmct.install(openmct.plugins.HistoricalTelemetryPlugin('TelemetryDomainObject', '/CVASHistory/', 'localhost'));
-    openmct.install(openmct.plugins.RealtimeTelemetryPlugin('TelemetryDomainObject', '/CVASRealtime/', 'localhost'));
+    openmct.install(openmct.plugins.HistoricalTelemetryPlugin('TelemetryDomainObject'));
+    openmct.install(openmct.plugins.RealtimeTelemetryPlugin('TelemetryDomainObject'));
 ```
 
 In `openmct/src/plugins/plugins.js` added lines:
