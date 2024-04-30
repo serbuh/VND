@@ -74,11 +74,13 @@ class TelemetryServer():
         def handle_subscribe(key):
             print(f"Subscribe req: {key}")
             self.subscribed_keys[key] = True
+            print(f"Currently subscribed {self.subscribed_keys.keys()}")
 
         @self.socketio.on("unsubscribe")
         def handle_unsubscribe(key):
             print(f"Unsubscribe req: {key}")
             self.subscribed_keys.pop(key, None)
+            print(f"Currently subscribed {self.subscribed_keys.keys()}")
 
         @self.flask_server.route('/')
         def static_file():
