@@ -7,12 +7,17 @@ Tested with:
 `node v18.18.0, v18.18.2, v20.6.1`   
 `npm v9.8.1, v10.1.0`   
 
-# Install
+# Install - Windows
 
 * Updated browser!
 * Install Node.js: https://nodejs.org/en/download
 * Install python
 * Create virtualenv with name `env` : `install_requirements.<sh/bat>`
+
+# Install - Linux
+```
+sudo apt install npm
+```
 
 # Defining interface and ports
 Use GUI: `run_interface_creator.<bat/sh>`   
