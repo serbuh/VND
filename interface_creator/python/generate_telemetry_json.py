@@ -102,32 +102,33 @@ class JSON_Creator():
             success = self.generate_json_from_lines(in_lines)
             return success
     
+    import os
     def generate_json_from_lines(self, in_lines:str) -> bool:            
-            
-            in_lines = in_lines.splitlines() # Split the lines with \n
+        in_lines = in_lines.splitlines() # Split the lines with \n
 
-            print(f"Writing resuls to json: {self.interface_file}")
-            
-            with open(self.interface_file, "w") as out_f:
+        print(f"Writing results to json: {self.interface_file}")
 
-                update_interface_result = self.write_lines_to_json(in_lines, out_f)
+        # Create the directory if it doesn't exist
+        os.makedirs(os.path.dirname(self.interface_file), exist_ok=True)
+        with open(self.interface_file, "w") as out_f:
+            update_interface_result = self.write_lines_to_json(in_lines, out_f)
 
-            if not update_interface_result:
-                print("Failed to update interface")
-                return update_interface_result
-            
-            print("Interface updated successfully")
-                
-            # Read version
-            with open(self.interface_file, "r") as json_f:
-                resulting_json = json.load(json_f)
-                ver = resulting_json.get("version", None)
-                if ver is None:
-                    print(f"Interface version is not specified. Use '{self.version_prefix}' to specify version")
-                else:
-                    print(f"Interface version: {ver}")
-
+        if not update_interface_result:
+            print("Failed to update interface")
             return update_interface_result
+
+        print("Interface updated successfully")
+
+        # Read version
+        with open(self.interface_file, "r") as json_f:
+            resulting_json = json.load(json_f)
+            ver = resulting_json.get("version", None)
+            if ver is None:
+                print(f"Interface version is not specified. Use '{self.version_prefix}' to specify version")
+            else:
+                print(f"Interface version: {ver}")
+
+        return update_interface_result
 
     @staticmethod
     def get_files_from_folder(interfaces_folder):
