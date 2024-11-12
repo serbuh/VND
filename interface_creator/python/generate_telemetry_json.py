@@ -102,7 +102,6 @@ class JSON_Creator():
             success = self.generate_json_from_lines(in_lines)
             return success
     
-    import os
     def generate_json_from_lines(self, in_lines:str) -> bool:            
         in_lines = in_lines.splitlines() # Split the lines with \n
 
